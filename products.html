@@ -3,102 +3,94 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>قطعٌ تُلمس - هند</title>
-<meta name="description" content="قطع مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها.">
-<style>
-/* Placeholder page - simple on purpose; the real shelves come later. */
-@font-face {
-  font-family: "DG Tebian";
-  src: url("fonts/dg-tebian-regular.woff2") format("woff2"),
-       url("DG%20Tebian/DG%20Tebian%20Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-display: swap;
+<title>القطع - هند</title>
+<meta name="description" content="قطع مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها. حين تشتري قطعة، تشتري تاريخاً وثقافة.">
+
+<link rel="icon" type="image/png" sizes="64x64" href="Images/site/favicon-64.png">
+<link rel="icon" type="image/png" sizes="512x512" href="Images/site/icon-512.png">
+<link rel="apple-touch-icon" href="Images/site/apple-touch-icon.png">
+<meta name="theme-color" content="#EFE7D9">
+
+<script>
+if (location.protocol !== "file:") {
+  ["black", "regular", "bold"].forEach(function (w) {
+    var l = document.createElement("link");
+    l.rel = "preload"; l.as = "font"; l.type = "font/woff2"; l.crossOrigin = "";
+    l.href = "fonts/dg-tebian-" + w + ".woff2";
+    document.head.appendChild(l);
+  });
 }
-@font-face {
-  font-family: "DG Tebian";
-  src: url("fonts/dg-tebian-bold.woff2") format("woff2"),
-       url("DG%20Tebian/DG%20Tebian%20Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-display: swap;
-}
-@font-face {
-  font-family: "DG Tebian";
-  src: url("fonts/dg-tebian-black.woff2") format("woff2"),
-       url("DG%20Tebian/DG%20Tebian%20Black.ttf") format("truetype");
-  font-weight: 900;
-  font-display: swap;
-}
-:root {
-  --sand: #EFE7D9;
-  --ink: #2E2721;
-  --ink-soft: #5A5045;
-  --clay: #9C4A2F;
-  --gold: #B08D57;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-  font-family: "DG Tebian", "Geeza Pro", "Baghdad", "Times New Roman", serif;
-  background: var(--sand);
-  color: var(--ink);
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: clamp(1.5rem, 5vw, 3rem);
-  line-height: 1.9;
-}
-.wordmark {
-  font-weight: 900;
-  font-size: 1.7rem;
-  color: var(--clay);
-  text-decoration: none;
-}
-.rule {
-  width: min(14rem, 60%);
-  height: 2px;
-  margin: 1.2rem auto;
-  background: linear-gradient(90deg, transparent, rgba(176,141,87,0.65) 20%, rgba(176,141,87,0.65) 80%, transparent);
-}
-h1 {
-  font-weight: 900;
-  font-size: clamp(2.2rem, 1.4rem + 4.5vw, 3.8rem);
-  color: var(--ink);
-}
-p {
-  max-width: 34rem;
-  margin-top: 1rem;
-  color: var(--ink-soft);
-  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem);
-  text-wrap: pretty;
-}
-.soon {
-  margin-top: 1.6rem;
-  font-weight: 700;
-  color: var(--clay);
-}
-.back {
-  display: inline-block;
-  margin-top: 2.4rem;
-  padding: 0.5em 1.6em;
-  border: 1.5px solid var(--gold);
-  border-radius: 999px;
-  color: var(--ink);
-  font-weight: 700;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-.back:hover { background-color: rgba(176, 141, 87, 0.14); }
-.back:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
-</style>
+</script>
+<link rel="stylesheet" href="site.css">
 </head>
 <body>
-<a class="wordmark" href="index.html">هند</a>
-<div class="rule" aria-hidden="true"></div>
-<h1>قطعٌ تُلمس</h1>
-<p>هنا ستجد قطعاً مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها. نرتّب الرفوف الآن، قطعةً قطعة.</p>
-<p class="soon">قريباً</p>
-<a class="back" href="index.html#doors">عودة إلى الصفحة الرئيسية</a>
+
+<a class="skip" href="#main">تجاوز إلى المحتوى</a>
+<div class="thread-progress" id="thread" aria-hidden="true"></div>
+
+<nav class="topbar has-tabs is-shown" id="topbar" aria-label="التنقل الرئيسي">
+  <a class="wordmark" href="index.html">هند</a>
+  <div class="tabs">
+    <a class="tab-home" href="index.html">الرئيسية</a>
+    <a href="products.html" aria-current="page">القطع</a>
+    <a href="about.html">من نحن</a>
+    <a href="documentary.html">الوثائقي</a>
+    <a href="follow.html">تابعونا</a>
+  </div>
+  <button class="cart-btn" type="button" data-cart-open>السلة <span class="cart-count" aria-live="polite" hidden>0</span></button>
+</nav>
+
+<main id="main">
+
+  <section class="page-head">
+    <span class="eyebrow">القطع</span>
+    <h1>قطعٌ تُلمس.</h1>
+    <p class="lede">مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها. حين تشتري قطعة، تشتري تاريخاً وثقافة.</p>
+  </section>
+
+  <!-- قطعة واحدة على الرف اليوم: تأخذ الصدارة كاملة بدل أن تبدو
+       وحيدة في شبكة فارغة. حين تنضم قطع أخرى نعود إلى الشبكة. -->
+  <section class="section" aria-label="رفوف القطع">
+    <div class="split image-first">
+      <figure class="photo reveal d2">
+        <img src="products/pillow/web/1.jpg" alt="وسادة السدو المنسوجة يدوياً بنقوش حمراء وبرتقالية" loading="lazy" decoding="async">
+      </figure>
+      <div class="text reveal">
+        <span class="eyebrow">أولى القطع</span>
+        <h2>وسادة السدو</h2>
+        <div class="body-text">
+          <p>نسجتها أم فارس في بادية مادبا على نول جدّتها: صوف مغزول باليد، وصبغة من الأرض، ونقوش تتوارثها الجدّات.</p>
+        </div>
+        <div class="buy-row">
+          <p class="price">٣٥ د.أ</p>
+          <button class="btn-solid" type="button" data-add="sadu-pillow">أضف إلى السلة</button>
+          <a class="btn" href="pillow.html">اقرأ حكايتها</a>
+        </div>
+        <p class="demo-hint">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>
+      </div>
+    </div>
+    <p class="shelf-note reveal">القطع تنضم إلى الرفوف واحدةً واحدة، وكل قطعة تصل ومعها حكايتها وصانعتها.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-band" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <span class="footer-star" aria-hidden="true"></span>
+    <span class="wordmark">هند</span>
+    <p class="footer-line">روحٌ صادف أنّ لها اسماً</p>
+    <nav class="footer-nav" aria-label="صفحات هند">
+      <a href="index.html">الرئيسية</a>
+      <a href="products.html" aria-current="page">القطع</a>
+      <a href="about.html">من نحن</a>
+      <a href="documentary.html">الوثائقي</a>
+      <a href="follow.html">تابعونا</a>
+    </nav>
+    <p class="footer-demo">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
 </body>
 </html>

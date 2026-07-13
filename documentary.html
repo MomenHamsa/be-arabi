@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>الوثائقي - هند</title>
+<meta name="description" content="نوثّق بالصورة حكايات الصنعة والصانعات، والبيوت التي ما زالت تحفظ روحها.">
+
+<link rel="icon" type="image/png" sizes="64x64" href="Images/site/favicon-64.png">
+<link rel="icon" type="image/png" sizes="512x512" href="Images/site/icon-512.png">
+<link rel="apple-touch-icon" href="Images/site/apple-touch-icon.png">
+<meta name="theme-color" content="#EFE7D9">
+
+<script>
+if (location.protocol !== "file:") {
+  ["black", "regular", "bold"].forEach(function (w) {
+    var l = document.createElement("link");
+    l.rel = "preload"; l.as = "font"; l.type = "font/woff2"; l.crossOrigin = "";
+    l.href = "fonts/dg-tebian-" + w + ".woff2";
+    document.head.appendChild(l);
+  });
+}
+</script>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<a class="skip" href="#main">تجاوز إلى المحتوى</a>
+
+<nav class="topbar has-tabs is-shown" id="topbar" aria-label="التنقل الرئيسي">
+  <a class="wordmark" href="index.html">هند</a>
+  <div class="tabs">
+    <a class="tab-home" href="index.html">الرئيسية</a>
+    <a href="products.html">القطع</a>
+    <a href="about.html">من نحن</a>
+    <a href="documentary.html" aria-current="page">الوثائقي</a>
+    <a href="follow.html">تابعونا</a>
+  </div>
+  <button class="cart-btn" type="button" data-cart-open>السلة <span class="cart-count" aria-live="polite" hidden>0</span></button>
+</nav>
+
+<main id="main">
+
+  <section class="page-head">
+    <span class="eyebrow">الوثائقي</span>
+    <h1>حكاياتٌ تُروى بالصورة.</h1>
+    <p class="lede">نصوّر الصنعة والصانعات، والبيوت التي ما زالت تحفظ روحها. أولى حكاياتنا قيد العمل الآن.</p>
+  </section>
+
+  <section class="section centered" aria-label="قريباً">
+
+    <!-- the khatam star, traced from the page lattice -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <polygon id="khatam-fass" points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5"/>
+      </defs>
+    </svg>
+
+    <div class="section-inner reveal">
+      <p class="soon-big">قريباً</p>
+    </div>
+
+    <!-- حتى يجهز أول فيلم: اللوحة نفسها التي أحببناها، لا قواعد ولا نهاية -->
+    <div class="mosaic-play reveal d2" id="mosaic-play" hidden>
+      <p class="mosaic-hint">حتى ذلك الحين: مرّر يدك على النجوم ولوّنها.</p>
+      <div class="mosaic-band" id="mosaic-band" aria-hidden="true"></div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-band" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <span class="footer-star" aria-hidden="true"></span>
+    <span class="wordmark">هند</span>
+    <p class="footer-line">روحٌ صادف أنّ لها اسماً</p>
+    <nav class="footer-nav" aria-label="صفحات هند">
+      <a href="index.html">الرئيسية</a>
+      <a href="products.html">القطع</a>
+      <a href="about.html">من نحن</a>
+      <a href="documentary.html" aria-current="page">الوثائقي</a>
+      <a href="follow.html">تابعونا</a>
+    </nav>
+    <p class="footer-demo">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

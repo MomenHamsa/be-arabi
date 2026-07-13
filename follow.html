@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>تابعونا - هند</title>
+<meta name="description" content="نقول ما نؤمن به على إنستغرام ويوتيوب. تابعنا ليصلك صوتنا.">
+
+<link rel="icon" type="image/png" sizes="64x64" href="Images/site/favicon-64.png">
+<link rel="icon" type="image/png" sizes="512x512" href="Images/site/icon-512.png">
+<link rel="apple-touch-icon" href="Images/site/apple-touch-icon.png">
+<meta name="theme-color" content="#EFE7D9">
+
+<script>
+if (location.protocol !== "file:") {
+  ["black", "regular", "bold"].forEach(function (w) {
+    var l = document.createElement("link");
+    l.rel = "preload"; l.as = "font"; l.type = "font/woff2"; l.crossOrigin = "";
+    l.href = "fonts/dg-tebian-" + w + ".woff2";
+    document.head.appendChild(l);
+  });
+}
+</script>
+<link rel="stylesheet" href="site.css">
+</head>
+<body>
+
+<a class="skip" href="#main">تجاوز إلى المحتوى</a>
+
+<nav class="topbar has-tabs is-shown" id="topbar" aria-label="التنقل الرئيسي">
+  <a class="wordmark" href="index.html">هند</a>
+  <div class="tabs">
+    <a class="tab-home" href="index.html">الرئيسية</a>
+    <a href="products.html">القطع</a>
+    <a href="about.html">من نحن</a>
+    <a href="documentary.html">الوثائقي</a>
+    <a href="follow.html" aria-current="page">تابعونا</a>
+  </div>
+  <button class="cart-btn" type="button" data-cart-open>السلة <span class="cart-count" aria-live="polite" hidden>0</span></button>
+</nav>
+
+<main id="main">
+
+  <section class="page-head">
+    <span class="eyebrow">تابعونا</span>
+    <h1>صوتٌ يُسمع.</h1>
+    <p class="lede">لا إعلانات عندنا. نتحدّث بالحكاية والصورة عمّا نؤمن به، وعمّا يخاف الناس أن يقولوه.</p>
+  </section>
+
+  <section class="section" aria-label="منصاتنا">
+    <div class="follow-grid">
+      <a class="follow-card reveal" href="#" data-follow="instagramUrl">
+        <span class="net">إنستغرام</span>
+        <h2>يوميات القطع والصانعات</h2>
+        <p>صور من الرفوف، ومن أيدي الصانعات وهي تعمل.</p>
+      </a>
+      <a class="follow-card reveal d2" href="#" data-follow="youtubeUrl">
+        <span class="net">يوتيوب</span>
+        <h2>الحكايات الطويلة</h2>
+        <p>وثائقياتنا وحكاياتنا، كما تستحق أن تُروى.</p>
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-band" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <span class="footer-star" aria-hidden="true"></span>
+    <span class="wordmark">هند</span>
+    <p class="footer-line">روحٌ صادف أنّ لها اسماً</p>
+    <nav class="footer-nav" aria-label="صفحات هند">
+      <a href="index.html">الرئيسية</a>
+      <a href="products.html">القطع</a>
+      <a href="about.html">من نحن</a>
+      <a href="documentary.html">الوثائقي</a>
+      <a href="follow.html" aria-current="page">تابعونا</a>
+    </nav>
+    <p class="footer-demo">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>
+  </div>
+</footer>
+
+<script src="site.js"></script>
+</body>
+</html>

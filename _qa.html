@@ -1,0 +1,39 @@
+<!doctype html>
+<!-- QA wrapper: same-origin iframe that scrolls to a selector and/or clicks
+     elements, so headless screenshots can capture mid-page and interactive
+     states. Not part of the site: delete freely. -->
+<meta charset="utf-8">
+<style>html,body{margin:0;height:100%}iframe{width:100%;height:100%;border:0;display:block}</style>
+<iframe id="f"></iframe>
+<script>
+var q = new URLSearchParams(location.search);
+var f = document.getElementById("f");
+f.src = q.get("page") || "index.html";
+f.onload = function () {
+  var d = f.contentDocument;
+  /* QA only: force scroll-reveals visible and images eager so the
+     screenshot shows the real layout, not the pre-reveal state */
+  d.querySelectorAll("img[loading=lazy]").forEach(function (i) { i.loading = "eager"; });
+  d.querySelectorAll(".reveal").forEach(function (el) { el.classList.add("is-visible"); });
+  var sel = q.get("scroll");
+  var y = q.get("y");
+  if (sel || y) {
+    var go = function () {
+      /* kill smooth scrolling: it animates in real time and the
+         virtual-time screenshot would catch it mid-flight */
+      d.documentElement.style.scrollBehavior = "auto";
+      if (y) { f.contentWindow.scrollTo({ top: parseInt(y, 10), behavior: "instant" }); return; }
+      var el = d.querySelector(sel);
+      if (el) el.scrollIntoView({ block: q.get("block") || "start", behavior: "instant" });
+    };
+    go();
+    /* re-scroll after late layout shifts (JS-built content, image loads) */
+    setTimeout(go, 800);
+    setTimeout(go, 2000);
+  }
+  var c1 = q.get("click");
+  if (c1) setTimeout(function () { var el = d.querySelector(c1); if (el) el.click(); }, 300);
+  var c2 = q.get("click2");
+  if (c2) setTimeout(function () { var el = d.querySelector(c2); if (el) el.click(); }, 1200);
+};
+</script>
