@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>حكاياتٌ تُقرأ - هند</title>
+<meta name="description" content="مكتبة توثّق حكاياتنا العربية، حكايةً بعد حكاية.">
+<style>
+/* Placeholder page - simple on purpose; the real library comes later. */
+@font-face {
+  font-family: "DG Tebian";
+  src: url("fonts/dg-tebian-regular.woff2") format("woff2"),
+       url("DG%20Tebian/DG%20Tebian%20Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DG Tebian";
+  src: url("fonts/dg-tebian-bold.woff2") format("woff2"),
+       url("DG%20Tebian/DG%20Tebian%20Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: "DG Tebian";
+  src: url("fonts/dg-tebian-black.woff2") format("woff2"),
+       url("DG%20Tebian/DG%20Tebian%20Black.ttf") format("truetype");
+  font-weight: 900;
+  font-display: swap;
+}
+:root {
+  --sand: #EFE7D9;
+  --ink: #2E2721;
+  --ink-soft: #5A5045;
+  --clay: #9C4A2F;
+  --gold: #B08D57;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: "DG Tebian", "Geeza Pro", "Baghdad", "Times New Roman", serif;
+  background: var(--sand);
+  color: var(--ink);
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: clamp(1.5rem, 5vw, 3rem);
+  line-height: 1.9;
+}
+.wordmark {
+  font-weight: 900;
+  font-size: 1.7rem;
+  color: var(--clay);
+  text-decoration: none;
+}
+.rule {
+  width: min(14rem, 60%);
+  height: 2px;
+  margin: 1.2rem auto;
+  background: linear-gradient(90deg, transparent, rgba(176,141,87,0.65) 20%, rgba(176,141,87,0.65) 80%, transparent);
+}
+h1 {
+  font-weight: 900;
+  font-size: clamp(2.2rem, 1.4rem + 4.5vw, 3.8rem);
+  color: var(--ink);
+}
+p {
+  max-width: 34rem;
+  margin-top: 1rem;
+  color: var(--ink-soft);
+  font-size: clamp(1.05rem, 1rem + 0.4vw, 1.25rem);
+  text-wrap: pretty;
+}
+.soon {
+  margin-top: 1.6rem;
+  font-weight: 700;
+  color: var(--clay);
+}
+.back {
+  display: inline-block;
+  margin-top: 2.4rem;
+  padding: 0.5em 1.6em;
+  border: 1.5px solid var(--gold);
+  border-radius: 999px;
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color 0.3s ease;
+}
+.back:hover { background-color: rgba(176, 141, 87, 0.14); }
+.back:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+</style>
+</head>
+<body>
+<a class="wordmark" href="index.html">هند</a>
+<div class="rule" aria-hidden="true"></div>
+<h1>حكاياتٌ تُقرأ</h1>
+<p>مكتبة نوثّق فيها حكاياتنا العربية: من صنع، ومن روى، وما الذي كاد يُنسى. نكتبها الآن، حكايةً بعد حكاية.</p>
+<p class="soon">قريباً</p>
+<a class="back" href="index.html#doors">عودة إلى الصفحة الرئيسية</a>
+</body>
+</html>

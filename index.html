@@ -571,10 +571,11 @@ em.mark { font-style: normal; color: var(--clay); }
 /* ---------- Framed photographs: a tatreez border, embroidered in
      madder-red cross-stitch stars, around a plaster mat ---------- */
 .photo {
+  --frame-pad: clamp(6px, 0.9vw, 10px);
   position: relative;
   background: var(--plaster);
   background-clip: padding-box;
-  padding: clamp(6px, 0.9vw, 10px);
+  padding: var(--frame-pad);
   border: clamp(18px, 2.4vw, 30px) solid transparent;
   border-image: var(--tatreez) 30 round;
   box-shadow: 0 1px 0 rgba(46, 39, 33, 0.10);
@@ -777,6 +778,57 @@ em.mark { font-style: normal; color: var(--clay); }
 }
 .cta .soon { color: rgba(237, 227, 210, 0.7); }
 
+/* ---------- لوحة الفسيفساء: a toy, not a puzzle. Faint khatam stars
+     light up in the star-grid colors wherever the hand passes - hover,
+     tap, or drag - then fade back to blank on their own. No rules and
+     no end. JS builds the tiles; without it the strip never appears
+     and the cards stand on their own. ---------- */
+.mosaic-play {
+  max-width: var(--field);
+  margin: clamp(2.5rem, 6vh, 4rem) auto 0;
+  text-align: center;
+}
+.mosaic-play:not([hidden]) + .doors { margin-top: clamp(2rem, 5vh, 3rem); }
+.mosaic-hint {
+  font-size: 0.95em;
+  color: var(--ink-soft);
+  margin-bottom: 1.1rem;
+}
+.mosaic-band {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: clamp(2px, 0.6vw, 8px);
+  touch-action: pan-y;   /* a finger can still scroll the page over the band */
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+.mosaic-band .tile { width: clamp(2.4rem, 6vw, 3.4rem); }
+.mosaic-band .tile svg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+  transition: transform 0.9s ease;
+}
+.mosaic-band .tile use {
+  fill: rgba(176, 141, 87, 0.12);
+  stroke: rgba(176, 141, 87, 0.4);
+  stroke-width: 1;
+  transition: fill 2s ease, stroke 2s ease;
+}
+/* the pop: quick in, lazy out; the color blooms then wilts */
+.mosaic-band .tile.lit svg {
+  transform: scale(1.16) rotate(22.5deg);
+  transition: transform 0.22s cubic-bezier(0.2, 0.8, 0.3, 1.4);
+}
+.mosaic-band .tile.lit use {
+  fill: var(--c);
+  stroke: var(--c);
+  transition: fill 0.1s ease, stroke 0.1s ease;
+}
+
 /* footer wayfinding that mirrors the doors */
 .footer-nav {
   display: flex;
@@ -902,6 +954,8 @@ footer .wordmark {
   .compare-answer, .compare-switch:hover, .door-title:hover { transform: none; }
   .compare-stage.is-anim .compare-topcoat,
   .compare-stage.is-anim .compare-handle { transition: none; }
+  .mosaic-band .tile svg { transition: none; }
+  .mosaic-band .tile.lit svg { transform: none; }
 }
 </style>
 </head>
@@ -1133,35 +1187,50 @@ footer .wordmark {
        Placeholder images: replace door-products.jpg, door-stories.jpg,
        door-social.jpg in Images/ with the final photography. -->
   <section class="section centered" id="doors" aria-labelledby="h-doors">
+
+    <!-- the khatam star, traced from the page lattice -->
+    <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+      <defs>
+        <polygon id="khatam-fass" points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5"/>
+      </defs>
+    </svg>
+
     <div class="section-inner reveal">
       <span class="eyebrow">ما نقدّمه</span>
-      <h2 id="h-doors">ثلاثة أبواب تدخل منها الروح إلى بيتك.</h2>
+      <h2 id="h-doors">قطعٌ تُلمس، حكاياتٌ تُقرأ، وصوتٌ يُسمع.</h2>
       <div class="body-text">
-        <p>هذه الروح التي قرأتها ليست كلاماً معلّقاً على جدار. نحوّلها كلّ يوم إلى أشياء تُلمس وتُقرأ وتُسمع.</p>
-        <p>وهل نحن متجر؟ نبيع، نعم. لكنّ البيع عندنا وسيلةٌ لا غاية: المال يُبقي هذا الصوت حرّاً لا يدين لأحد، والقطعة تعيد إلى بيتك ما كان لك دائماً.</p>
+        <p>هذه أبوابنا الثلاثة. افتحها وخذ ما كان لك دائماً.</p>
       </div>
     </div>
+
+    <!-- لوحة الفسيفساء: touch it and it blooms, leave it and it fades.
+         JS fills the band with tiles; without JS it never appears. -->
+    <div class="mosaic-play reveal d2" id="mosaic-play" hidden>
+      <p class="mosaic-hint">مرّر يدك على النجوم ولوّنها.</p>
+      <div class="mosaic-band" id="mosaic-band" aria-hidden="true"></div>
+    </div>
+
     <div class="doors">
       <article class="door reveal">
         <figure class="photo">
           <img src="Images/door-products.jpg" alt="قطع مصنوعة يدوياً تحمل روح البيت العربي" loading="lazy" decoding="async" onerror="this.closest('figure').remove()">
         </figure>
         <h3><a class="door-title" href="products.html" data-door="productsUrl">قطعٌ تُلمس</a></h3>
-        <p>أشياء مصنوعة بأيدٍ عربية تعيد إلى بيتك رائحته وذاكرته. لكلّ قطعة صانعتها وحكايتها: تقرأ الحكاية، ثم تطلب القطعة إلى بيتك.</p>
+        <p>قطع مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها.</p>
       </article>
       <article class="door reveal d2">
         <figure class="photo">
           <img src="Images/door-stories.jpg" alt="كتب ومخطوطات عربية تحفظ الحكايات" loading="lazy" decoding="async" onerror="this.closest('figure').remove()">
         </figure>
         <h3><a class="door-title" href="stories.html" data-door="storiesUrl">حكاياتٌ تُقرأ</a></h3>
-        <p>مكتبة نوثّق فيها حكاياتنا العربية: من صنع، ومن روى، وما الذي كاد يُنسى. تكبر حكايةً بعد حكاية.</p>
+        <p>مكتبة توثّق حكاياتنا العربية، حكايةً بعد حكاية.</p>
       </article>
       <article class="door reveal d3">
         <figure class="photo">
           <img src="Images/door-social.jpg" alt="صوت هند على منصات التواصل" loading="lazy" decoding="async" onerror="this.closest('figure').remove()">
         </figure>
         <h3><a class="door-title" href="#" data-social>صوتٌ يُسمع</a></h3>
-        <p>على منصّات التواصل نقول ما نؤمن به بلا مواربة، بالحكاية والصورة. تابعنا ليصلك الصوت أينما كنت.</p>
+        <p>نقول ما نؤمن به على إنستغرام ويوتيوب. تابعنا ليصلك صوتنا.</p>
       </article>
     </div>
   </section>
@@ -1406,6 +1475,49 @@ var HIND_CONFIG = {
       });
     }
   }
+
+  /* ما نقدّمه: a small mosaic toy. Hover, tap, or drag paints the
+     stars in the star-grid colors; each fades back on its own. Purely
+     decorative - nothing on the page depends on it. */
+  var mosaicWrap = document.getElementById("mosaic-play");
+  var mosaicBand = document.getElementById("mosaic-band");
+  if (mosaicWrap && mosaicBand) (function () {
+    var COLORS = ["#B08D57", "#A2573C", "#2B5E54", "#2C4E6E"];
+    var TILES = 32;
+    var html = "";
+    for (var i = 0; i < TILES; i++) {
+      html += '<div class="tile"><svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><use href="#khatam-fass" transform="scale(0.92)"/></svg></div>';
+    }
+    mosaicBand.innerHTML = html;
+    mosaicWrap.hidden = false;
+    var ci = 0;
+    var light = function (el) {
+      var tile = el && el.closest ? el.closest(".tile") : null;
+      if (!tile || tile.classList.contains("lit")) return;
+      ci = (ci + 1) % COLORS.length;
+      tile.style.setProperty("--c", COLORS[ci]);
+      tile.classList.add("lit");
+      setTimeout(function () { tile.classList.remove("lit"); }, 900);
+    };
+    mosaicBand.addEventListener("pointermove", function (e) { light(e.target); }, { passive: true });
+    mosaicBand.addEventListener("pointerdown", function (e) { light(e.target); }, { passive: true });
+
+    /* one quick wave across the band when it first appears: show, don't tell */
+    if (!reduced && "IntersectionObserver" in window) {
+      var mosaicIo = new IntersectionObserver(function (entries) {
+        if (!entries[0].isIntersecting) return;
+        mosaicIo.disconnect();
+        var tiles = mosaicBand.querySelectorAll(".tile");
+        var start = Math.max(0, Math.floor(tiles.length / 2) - 4);
+        for (var n = 0; n < 7 && start + n < tiles.length; n++) {
+          (function (tile, delay) {
+            setTimeout(function () { light(tile); }, delay);
+          })(tiles[start + n], 350 + n * 90);
+        }
+      }, { threshold: 0.4 });
+      mosaicIo.observe(mosaicBand);
+    }
+  })();
 
   /* The golden thread grows as the reader moves through the page */
   var thread = document.getElementById("thread");
