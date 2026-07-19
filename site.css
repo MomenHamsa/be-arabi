@@ -129,18 +129,14 @@ main { background: var(--sand) var(--pattern-page); background-size: 160px; }
   align-items: center;
   justify-content: center;
   gap: 0.9rem;
-  padding: 0.6rem var(--pad-x);
-  background: rgba(246, 240, 229, 0.85);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(176, 141, 87, 0.25);
-  opacity: 0;
-  visibility: hidden;               /* removes hidden controls from tab order */
-  pointer-events: none;
-  transition: opacity 0.8s ease, visibility 0s linear 0.8s;
+  min-height: 3rem;
+  padding: 0 var(--pad-x);
+  background: rgba(246, 240, 229, 0.78);
+  -webkit-backdrop-filter: saturate(1.8) blur(20px);
+  backdrop-filter: saturate(1.8) blur(20px);
+  border-bottom: 1px solid rgba(176, 141, 87, 0.2);
 }
-.topbar.is-shown { opacity: 1; visibility: visible; pointer-events: auto; transition-delay: 0s; }
-.topbar .wordmark { font-weight: 900; font-size: 1.35rem; color: var(--ink); line-height: 1; text-decoration: none; }
+.topbar .wordmark { font-weight: 900; font-size: 1.15rem; color: var(--ink); line-height: 1; text-decoration: none; }
 .topbar .wordmark:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 /* the one quick path: straight to the offering */
 .topbar .quick {
@@ -904,7 +900,6 @@ footer .wordmark {
   .door:hover .photo, .cta:hover, .hero-cta:hover { transform: none; }
   .hero .rise { animation: none; opacity: 1; transform: none; }
   .reveal { opacity: 1; transform: none; transition: none; }
-  .topbar { transition: none; }
   .proof, .proof::after, .cap-row, .cap-row > span,
   .kicker-cold, .compare-answer, .compare-switch, .door-title { transition: none; }
   .compare-answer, .compare-switch:hover, .door-title:hover { transform: none; }
@@ -912,6 +907,7 @@ footer .wordmark {
   .compare-stage.is-anim .compare-handle { transition: none; }
   .mosaic-band .tile svg { transition: none; }
   .mosaic-band .tile.lit svg { transform: none; }
+  .carousel-arrow, .carousel-dots button { transition: none; }
 }
 
 /* ============================================================
@@ -934,17 +930,18 @@ footer .wordmark {
   -webkit-overflow-scrolling: touch;
 }
 .topbar .tabs::-webkit-scrollbar { display: none; }
+/* quiet, small, evenly spaced: the links whisper and the page speaks */
 .topbar .tabs a {
   color: var(--ink-soft);
   text-decoration: none;
-  font-weight: 700;
-  font-size: 0.95rem;
+  font-weight: 400;
+  font-size: 0.875rem;
   white-space: nowrap;
-  padding: 0.15em 0;
-  border-bottom: 2px solid transparent;
+  padding: 0.35em 0;
+  transition: color 0.25s ease;
 }
-.topbar .tabs a:hover { color: var(--clay); }
-.topbar .tabs a[aria-current="page"] { color: var(--clay); border-bottom-color: var(--gold); }
+.topbar .tabs a:hover { color: var(--ink); }
+.topbar .tabs a[aria-current="page"] { color: var(--clay); }
 .topbar .tabs a:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 /* when the row genuinely overflows (JS sets is-clipped), fade the cut
    edge so the eye knows there is more to drag into view */
@@ -959,33 +956,38 @@ footer .wordmark {
   .topbar .tabs .tab-home { display: none; }
 }
 
-/* the basket: quiet until it holds something */
+/* the basket: a bare bag glyph, quiet until it holds something */
 .cart-btn {
   flex: 0 0 auto;
+  position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 0.45em;
-  font-family: var(--font);
-  font-weight: 700;
-  font-size: 0.9rem;
+  justify-content: center;
+  width: 2.2rem;
+  height: 2.2rem;
   color: var(--ink);
   background: transparent;
-  border: 1.5px solid var(--gold);
-  border-radius: 999px;
-  padding: 0.3em 1em;
+  border: 0;
+  padding: 0;
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  opacity: 0.78;
+  transition: opacity 0.25s ease;
 }
-.cart-btn:hover { background: rgba(176, 141, 87, 0.14); }
+.cart-btn:hover { opacity: 1; }
+.cart-btn .bag { width: 1.05rem; height: auto; display: block; }
 .cart-btn:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 .cart-count {
-  min-width: 1.5em;
-  padding: 0 0.35em;
+  position: absolute;
+  top: 0.05rem;
+  inset-inline-end: -0.15rem;
+  min-width: 1rem;
+  padding: 0 0.25em;
   border-radius: 999px;
   background: var(--clay);
   color: var(--plaster);
-  font-size: 0.85em;
-  line-height: 1.5;
+  font-size: 0.62rem;
+  font-weight: 700;
+  line-height: 1.6;
   text-align: center;
 }
 
@@ -1087,17 +1089,19 @@ footer .wordmark {
 .offer-item h3 { font-weight: 900; font-size: 1.25rem; color: var(--clay); margin-bottom: 0.4rem; }
 .offer-item p { margin: 0; color: var(--ink-soft); font-size: 0.95em; text-wrap: pretty; }
 
-/* ---------- The shelves: product cards ---------- */
+/* ---------- The shelves: product cards ----------
+   Fixed column counts, not auto-fit: auto-fit counts columns by the
+   track max and left the shelf half empty once it actually filled. */
 .shelf {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(2.5rem, 5vw, 3.5rem);
+  gap: clamp(2rem, 4vw, 3.5rem) clamp(1.5rem, 3vw, 3rem);
   max-width: var(--field);
   margin-inline: auto;
   text-align: center;
-  justify-content: center;
 }
-@media (min-width: 760px) { .shelf { grid-template-columns: repeat(auto-fit, minmax(16rem, 24rem)); } }
+@media (min-width: 560px) { .shelf { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1000px) { .shelf { grid-template-columns: repeat(3, 1fr); } }
 .card .photo { max-width: 22rem; margin-inline: auto; border-width: clamp(13px, 1.6vw, 20px); }
 .card h2 {
   font-weight: 900;
@@ -1122,11 +1126,27 @@ footer .wordmark {
   margin: clamp(2.5rem, 6vh, 4rem) auto 0;
 }
 
+/* a piece that is on its way: the frame is real, the photo is not
+   here yet - a faint star holds its place */
+.photo-soon {
+  aspect-ratio: 3 / 4;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 0.9rem;
+  background: #EAE0CD;
+  color: var(--gold);
+}
+.photo-soon svg { width: 3.2rem; height: 3.2rem; opacity: 0.55; }
+.photo-soon span { font-size: 0.85rem; font-weight: 700; color: var(--ink-soft); opacity: 0.7; }
+.card-photo { display: block; }
+.card-photo:focus-visible { outline: 2px solid var(--clay); outline-offset: 4px; }
+
 /* ---------- A piece's own page ----------
-   Mobile order is a store's order: first photo, then name + price +
-   add-to-cart, then the rest of the photos. On wide screens the
-   gallery stacks in one column and the buy panel sits sticky beside
-   it, so the price and CTA never scroll away. */
+   Mobile order is a store's order: all the photos in one swipeable
+   frame, then name + price + add-to-cart. On wide screens the
+   carousel and the sticky buy panel sit side by side, so the price
+   and CTA never scroll away. */
 .product-top {
   display: grid;
   grid-template-columns: 1fr;
@@ -1137,24 +1157,83 @@ footer .wordmark {
 @media (min-width: 820px) {
   .product-top {
     grid-template-columns: 6fr 5fr;
-    grid-template-areas:
-      "main panel"
-      "more panel";
+    grid-template-areas: "main panel";
     align-items: start;
     column-gap: clamp(2.5rem, 6vw, 5rem);
-    row-gap: clamp(1rem, 2.5vw, 1.75rem);
   }
-  .gallery-main { grid-area: main; }
-  .gallery-more { grid-area: more; }
+  .gallery-carousel { grid-area: main; }
   .product-top .buy-panel {
     grid-area: panel;
     position: sticky;
     top: 4rem;
   }
 }
-.gallery-main .photo img { aspect-ratio: 1; }
-.gallery-more { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(1rem, 2.5vw, 1.75rem); }
-.gallery-more .photo img { aspect-ratio: 1; }
+
+/* ---------- Product photo carousel ----------
+   One framed window; the photos slide through it side by side and
+   snap one at a time, the way stories are flipped through. */
+.carousel-window { position: relative; }
+.carousel-track {
+  display: flex;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.carousel-track::-webkit-scrollbar { display: none; }
+.carousel-track:focus-visible { outline: 2px solid var(--clay); outline-offset: 6px; }
+.carousel-track img {
+  flex: 0 0 100%;
+  width: 100%;
+  aspect-ratio: 1;
+  object-fit: cover;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(246, 240, 229, 0.88);
+  color: var(--ink);
+  box-shadow: 0 1px 6px rgba(46, 39, 33, 0.2);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+.carousel-arrow svg { width: 0.85rem; height: 0.85rem; display: block; }
+.carousel-arrow-prev { inset-inline-start: 1rem; }
+.carousel-arrow-next { inset-inline-end: 1rem; }
+.carousel-window:hover .carousel-arrow:not([disabled]),
+.carousel-arrow:focus-visible { opacity: 1; }
+.carousel-arrow[disabled] { pointer-events: none; }
+@media (hover: none) { .carousel-arrow { display: none; } }
+.carousel-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 0.9rem;
+}
+.carousel-dots button {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  border: 0;
+  padding: 0;
+  background: rgba(176, 141, 87, 0.35);
+  cursor: pointer;
+  transition: background-color 0.25s ease, transform 0.25s ease;
+}
+.carousel-dots button[aria-current="true"] { background: var(--clay); transform: scale(1.3); }
+.carousel-dots button:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 .buy-panel { max-width: var(--measure); }
 .buy-panel h1 { font-size: clamp(2.2rem, 1.5rem + 3vw, 3.3rem); margin-bottom: 0.6rem; }
 /* price and add-to-cart are one decision: keep them on one row */
@@ -1301,6 +1380,17 @@ footer .wordmark {
   border-radius: 4px;
   border: 1px solid rgba(176, 141, 87, 0.4);
 }
+/* preview pieces have no photo yet: a faint star holds the thumb */
+.cart-item-img.is-empty {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  border-radius: 4px;
+  border: 1px solid rgba(176, 141, 87, 0.4);
+  background: #EAE0CD;
+  color: var(--gold);
+}
+.cart-item-img.is-empty svg { width: 1.6rem; height: 1.6rem; opacity: 0.6; }
 .cart-item-name { display: block; font-weight: 700; color: var(--ink); text-decoration: none; }
 .cart-item-name:hover { color: var(--clay); }
 .cart-item-price { display: block; color: var(--clay); font-weight: 700; font-size: 0.95em; margin-top: 0.15em; }

@@ -37,7 +37,10 @@ if (location.protocol !== "file:") {
     <a href="documentary.html">الوثائقي</a>
     <a href="follow.html">تابعونا</a>
   </div>
-  <button class="cart-btn" type="button" data-cart-open>السلة <span class="cart-count" aria-live="polite" hidden>0</span></button>
+  <button class="cart-btn" type="button" data-cart-open aria-label="السلة">
+    <svg class="bag" viewBox="0 0 18 22" aria-hidden="true" focusable="false"><path d="M6 7.2 V5.6 a3 3 0 0 1 6 0 V7.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2.4" y="7.2" width="13.2" height="12.6" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    <span class="cart-count" aria-live="polite" hidden>0</span>
+  </button>
 </nav>
 
 <main id="main">

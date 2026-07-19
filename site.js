@@ -24,7 +24,19 @@ var HIND_PRODUCTS = {
     currency: "د.أ",
     img: "products/pillow/web/1.jpg",
     url: "pillow.html"
-  }
+  },
+
+  /* ---- عيّنات المعاينة ----
+     Layout placeholders so the shelves can be seen full: no photos,
+     no pages, demo prices. Delete this block (and their cards in
+     products.html) when real pieces arrive. */
+  "demo-rug":        { name: "بساط منسوج",         price: 90, currency: "د.أ", img: "", url: "" },
+  "demo-cups":       { name: "طقم فناجين قيشاني",  price: 28, currency: "د.أ", img: "", url: "" },
+  "demo-mibkhara":   { name: "مبخرة نحاس منقوشة",  price: 42, currency: "د.أ", img: "", url: "" },
+  "demo-tray":       { name: "صينية نحاس محفورة",  price: 55, currency: "د.أ", img: "", url: "" },
+  "demo-mirror":     { name: "مرآة بإطار صدف",     price: 75, currency: "د.أ", img: "", url: "" },
+  "demo-lantern":    { name: "فانوس مشغول باليد",  price: 38, currency: "د.أ", img: "", url: "" },
+  "demo-tablecloth": { name: "غطاء طاولة مطرّز",   price: 60, currency: "د.أ", img: "", url: "" }
 };
 
 /* Gentle scroll reveals + top bar fade + actions. */
@@ -46,21 +58,6 @@ var HIND_PRODUCTS = {
     revealed.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  /* Pages with a full hero earn the fade-in; every other page keeps
-     the bar in sight from the first paint. */
-  var topbar = document.getElementById("topbar");
-  var hero = document.getElementById("hero");
-  if (topbar) {
-    if (hero && "IntersectionObserver" in window) {
-      var heroIo = new IntersectionObserver(function (entries) {
-        topbar.classList.toggle("is-shown", !entries[0].isIntersecting);
-      }, { threshold: 0.05 });
-      heroIo.observe(hero);
-    } else {
-      topbar.classList.add("is-shown");
-    }
-  }
-
   /* fade the cut edge of the tab row only when it actually overflows */
   var tabRow = document.querySelector(".topbar .tabs");
   if (tabRow) {
@@ -70,6 +67,87 @@ var HIND_PRODUCTS = {
     checkClip();
     window.addEventListener("resize", checkClip);
   }
+
+  /* Product photos: one framed window, swipe through like a story.
+     The track scroll-snaps natively; JS only adds dots and arrows. */
+  document.querySelectorAll("[data-carousel]").forEach(function (root) {
+    var track = root.querySelector(".carousel-track");
+    if (!track) return;
+    var slides = Array.prototype.slice.call(track.children);
+    if (slides.length < 2) return;
+    var frame = root.querySelector(".carousel-window") || root;
+
+    /* RTL: the previous photo lives toward the right edge, so each
+       arrow points at the edge it sits on */
+    var chevRight = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M6 3 L11 8 L6 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var chevLeft = '<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M10 3 L5 8 L10 13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    var prevBtn = document.createElement("button");
+    prevBtn.type = "button";
+    prevBtn.className = "carousel-arrow carousel-arrow-prev";
+    prevBtn.setAttribute("aria-label", "الصورة السابقة");
+    prevBtn.innerHTML = chevRight;
+    var nextBtn = document.createElement("button");
+    nextBtn.type = "button";
+    nextBtn.className = "carousel-arrow carousel-arrow-next";
+    nextBtn.setAttribute("aria-label", "الصورة التالية");
+    nextBtn.innerHTML = chevLeft;
+    frame.appendChild(prevBtn);
+    frame.appendChild(nextBtn);
+
+    var dots = document.createElement("div");
+    dots.className = "carousel-dots";
+    slides.forEach(function (_, i) {
+      var d = document.createElement("button");
+      d.type = "button";
+      d.setAttribute("aria-label", "الصورة " + (i + 1) + " من " + slides.length);
+      dots.appendChild(d);
+    });
+    root.appendChild(dots);
+    var dotEls = Array.prototype.slice.call(dots.children);
+
+    var index = 0;
+    var paint = function () {
+      dotEls.forEach(function (d, i) {
+        if (i === index) d.setAttribute("aria-current", "true");
+        else d.removeAttribute("aria-current");
+      });
+      prevBtn.disabled = index === 0;
+      nextBtn.disabled = index === slides.length - 1;
+    };
+    /* scrollIntoView is RTL-safe; raw scrollLeft math is not */
+    var goTo = function (i) {
+      i = Math.max(0, Math.min(i, slides.length - 1));
+      slides[i].scrollIntoView({ behavior: reduced ? "auto" : "smooth", block: "nearest", inline: "start" });
+    };
+    prevBtn.addEventListener("click", function () { goTo(index - 1); });
+    nextBtn.addEventListener("click", function () { goTo(index + 1); });
+    dotEls.forEach(function (d, i) {
+      d.addEventListener("click", function () { goTo(i); });
+    });
+
+    /* the slide in view is a plain function of scroll position; each
+       slide is exactly one track-width wide (abs: RTL scrollLeft is
+       negative in modern browsers) */
+    var scrollTick = false;
+    track.addEventListener("scroll", function () {
+      if (scrollTick) return;
+      scrollTick = true;
+      requestAnimationFrame(function () {
+        scrollTick = false;
+        var i = Math.round(Math.abs(track.scrollLeft) / track.clientWidth);
+        i = Math.max(0, Math.min(i, slides.length - 1));
+        if (i !== index) { index = i; paint(); }
+      });
+    }, { passive: true });
+
+    /* keyboard on the frame: in RTL the left arrow moves forward */
+    track.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); goTo(index + 1); }
+      else if (e.key === "ArrowRight") { e.preventDefault(); goTo(index - 1); }
+    });
+
+    paint();
+  });
 
   /* Door pages: markup carries relative defaults; config overrides them */
   document.querySelectorAll("[data-door]").forEach(function (el) {
@@ -406,11 +484,18 @@ var HIND_PRODUCTS = {
     Object.keys(cart).forEach(function (id) {
       var p = HIND_PRODUCTS[id];
       if (!p) return;
+      /* preview pieces have no photo and no page yet */
+      var thumb = p.img
+        ? '<a class="cart-item-img" href="' + p.url + '" tabindex="-1" aria-hidden="true"><img src="' + p.img + '" alt=""></a>'
+        : '<span class="cart-item-img is-empty" aria-hidden="true"><svg viewBox="-30 -30 60 60" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="2.2"/></svg></span>';
+      var nameEl = p.url
+        ? '<a class="cart-item-name" href="' + p.url + '">' + p.name + '</a>'
+        : '<span class="cart-item-name">' + p.name + '</span>';
       html +=
         '<div class="cart-item" data-id="' + id + '">' +
-          '<a class="cart-item-img" href="' + p.url + '" tabindex="-1" aria-hidden="true"><img src="' + p.img + '" alt=""></a>' +
+          thumb +
           '<div class="cart-item-info">' +
-            '<a class="cart-item-name" href="' + p.url + '">' + p.name + '</a>' +
+            nameEl +
             '<span class="cart-item-price">' + num(p.price) + ' ' + p.currency + '</span>' +
             '<div class="cart-qty">' +
               '<button type="button" data-qty="-1" aria-label="أنقص واحدة">&#8722;</button>' +
