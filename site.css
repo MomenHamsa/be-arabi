@@ -1172,9 +1172,18 @@ footer .wordmark {
 /* ---------- Product photo carousel ----------
    One framed window; the photos slide through it side by side and
    snap one at a time, the way stories are flipped through. */
-.carousel-window { position: relative; }
+/* The frame reserves the aspect ratio; the track fills the frame;
+   each image fills the track. Putting aspect-ratio on the img inside
+   a flex row lets flex intrinsic sizing win, which stretched images
+   to their intrinsic 1200px height and cropped them via object-fit
+   cover — the "zoomed in" bug. */
+.carousel-window {
+  position: relative;
+  aspect-ratio: 1;
+}
 .carousel-track {
   display: flex;
+  height: 100%;
   overflow-x: auto;
   scroll-snap-type: x mandatory;
   overscroll-behavior-x: contain;
@@ -1186,7 +1195,7 @@ footer .wordmark {
 .carousel-track img {
   flex: 0 0 100%;
   width: 100%;
-  aspect-ratio: 1;
+  height: 100%;
   object-fit: cover;
   scroll-snap-align: start;
   scroll-snap-stop: always;
