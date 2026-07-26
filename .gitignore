@@ -1,1 +1,7 @@
 .DS_Store
+
+# Local Claude Code / IDE settings
+.claude/
+
+# Ephemeral browser-audit artifacts (Lighthouse reports, screenshots, traces)
+audit/

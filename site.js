@@ -588,3 +588,31 @@ var HIND_PRODUCTS = {
 
   render();
 })();
+
+/* Prefetch destination pages on first hover / focus / touchstart so any
+   internal navigation feels instant. Runs once per URL, only over http(s),
+   and only for links that point at another page on this site (skips
+   anchors, mailto, tel, external). */
+(function () {
+  if (location.protocol === "file:") return;
+  var prefetched = {};
+  function prefetch(url) {
+    if (!url || prefetched[url]) return;
+    prefetched[url] = true;
+    var l = document.createElement("link");
+    l.rel = "prefetch";
+    l.href = url;
+    document.head.appendChild(l);
+  }
+  var links = document.querySelectorAll('a[href$=".html"], a[href*=".html#"]');
+  links.forEach(function (a) {
+    var href = a.getAttribute("href");
+    if (!href || href.charAt(0) === "#") return;
+    var target = href.split("#")[0];
+    if (!target) return;
+    var arm = function () { prefetch(target); };
+    a.addEventListener("pointerenter", arm, { once: true, passive: true });
+    a.addEventListener("focus", arm, { once: true });
+    a.addEventListener("touchstart", arm, { once: true, passive: true });
+  });
+})();
