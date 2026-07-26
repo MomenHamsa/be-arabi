@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Pieces - Hind</title>
+<meta name="description" content="Pieces made by Arab hands, each with its maker and its story. When you buy a piece, you buy a history and a culture.">
+
+<!-- TODO before launch: replace hind.example with your real domain (repo-wide). -->
+<link rel="canonical" href="https://hind.example/en/products.html">
+<link rel="alternate" hreflang="ar" href="https://hind.example/products.html">
+<link rel="alternate" hreflang="en" href="https://hind.example/en/products.html">
+<link rel="alternate" hreflang="x-default" href="https://hind.example/products.html">
+<meta property="og:site_name" content="Hind">
+<meta property="og:title" content="The Pieces - Hind">
+<meta property="og:description" content="Pieces made by Arab hands, each with its maker and its story.">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_JO">
+<meta property="og:url" content="https://hind.example/en/products.html">
+<meta property="og:image" content="https://hind.example/Images/site/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="The Pieces - Hind">
+<meta name="twitter:description" content="Pieces made by Arab hands, each with its maker and its story.">
+<meta name="twitter:image" content="https://hind.example/Images/site/og-image.png">
+
+<link rel="icon" type="image/png" sizes="64x64" href="../Images/site/favicon-64.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../Images/site/icon-512.png">
+<link rel="apple-touch-icon" href="../Images/site/apple-touch-icon.png">
+<meta name="theme-color" content="#EFE7D9">
+
+<link rel="stylesheet" href="../site.css">
+</head>
+<body>
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="thread-progress" id="thread" aria-hidden="true"></div>
+
+<nav class="topbar has-tabs" id="topbar" aria-label="Main navigation">
+  <a class="wordmark" href="index.html">Hind</a>
+  <div class="tabs">
+    <a class="tab-home" href="index.html">Home</a>
+    <a href="products.html" aria-current="page">Pieces</a>
+    <a href="about.html">About</a>
+    <a href="documentary.html">Film</a>
+    <a href="follow.html">Follow</a>
+  </div>
+  <button class="cart-btn" type="button" data-cart-open aria-label="Cart">
+    <svg class="bag" viewBox="0 0 18 22" aria-hidden="true" focusable="false"><path d="M6 7.2 V5.6 a3 3 0 0 1 6 0 V7.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2.4" y="7.2" width="13.2" height="12.6" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    <span class="cart-count" aria-live="polite" hidden>0</span>
+  </button>
+</nav>
+
+<main id="main">
+
+  <section class="page-head">
+    <span class="eyebrow">The Pieces</span>
+    <h1>Pieces you can touch.</h1>
+    <p class="lede">Made by Arab hands, each piece has its maker and its story. When you buy a piece, you buy a history and a culture.</p>
+  </section>
+
+  <!-- The shelf is populated from products/data/en/catalog.json by site.js.
+       If the fetch fails, the skeleton grid below stays as a fallback. -->
+  <section class="section" aria-label="The shelves">
+
+    <div class="filters reveal" role="group" aria-label="Filter pieces by category" data-category-filter>
+      <button type="button" class="chip is-active" data-category-chip="all">All</button>
+    </div>
+
+    <div class="shelf" data-shelf aria-busy="true">
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+    </div>
+
+    <p class="shelf-empty" data-shelf-empty hidden>No pieces in this category yet. The shelves are being arranged.</p>
+    <p class="shelf-note reveal">The Sadu cushion is the first real piece. The rest are previews - placed here so we can watch the shelves fill, and they will be replaced by real pieces one by one.</p>
+  </section>
+
+</main>
+
+<footer>
+  <div class="footer-band" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <span class="footer-star" aria-hidden="true"></span>
+    <span class="wordmark">Hind</span>
+    <p class="footer-line">a soul that happens to have a name</p>
+    <nav class="footer-nav" aria-label="Hind pages">
+      <a href="index.html">Home</a>
+      <a href="products.html" aria-current="page">Pieces</a>
+      <a href="about.html">About</a>
+      <a href="documentary.html">Film</a>
+      <a href="follow.html">Follow</a>
+    </nav>
+    <p class="footer-demo">This shop is a demo for now: we take orders, but no money yet.</p>
+  </div>
+</footer>
+
+<script src="../site.js"></script>
+</body>
+</html>

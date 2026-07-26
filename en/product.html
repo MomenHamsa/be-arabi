@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A piece - Hind</title>
+<meta name="description" content="A piece made by Arab hands, with its own maker and its own story.">
+
+<!-- TODO before launch: replace hind.example with your real domain (repo-wide).
+     site.js updates og:title/description/image per product for JS-aware
+     crawlers (Google); social scrapers see the generic tags below. -->
+<link rel="canonical" href="https://hind.example/en/product.html?id=sadu-pillow">
+<link rel="alternate" hreflang="ar" href="https://hind.example/product.html?id=sadu-pillow">
+<link rel="alternate" hreflang="en" href="https://hind.example/en/product.html?id=sadu-pillow">
+<link rel="alternate" hreflang="x-default" href="https://hind.example/product.html?id=sadu-pillow">
+<meta property="og:site_name" content="Hind">
+<meta property="og:title" content="A piece - Hind">
+<meta property="og:description" content="A piece made by Arab hands, with its own maker and its own story.">
+<meta property="og:type" content="product">
+<meta property="og:locale" content="en_US">
+<meta property="og:locale:alternate" content="ar_JO">
+<meta property="og:url" content="https://hind.example/en/product.html?id=sadu-pillow">
+<meta property="og:image" content="https://hind.example/Images/site/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A piece - Hind">
+<meta name="twitter:description" content="A piece made by Arab hands, with its own maker and its own story.">
+<meta name="twitter:image" content="https://hind.example/Images/site/og-image.png">
+
+<link rel="icon" type="image/png" sizes="64x64" href="../Images/site/favicon-64.png">
+<link rel="icon" type="image/png" sizes="512x512" href="../Images/site/icon-512.png">
+<link rel="apple-touch-icon" href="../Images/site/apple-touch-icon.png">
+<meta name="theme-color" content="#EFE7D9">
+
+<link rel="stylesheet" href="../site.css">
+
+<!-- CRM-ready product template (English). Reads products/data/en/<id>.json
+     via site.js (loadProductData), keyed by ?id= (default sadu-pillow).
+     Same JSON shape as the Arabic side; only the data folder differs. -->
+</head>
+<body class="product-page">
+
+<a class="skip" href="#main">Skip to content</a>
+<div class="thread-progress" id="thread" aria-hidden="true"></div>
+
+<nav class="topbar has-tabs" id="topbar" aria-label="Main navigation">
+  <a class="wordmark" href="index.html">Hind</a>
+  <div class="tabs">
+    <a class="tab-home" href="index.html">Home</a>
+    <a href="products.html" aria-current="page">Pieces</a>
+    <a href="about.html">About</a>
+    <a href="documentary.html">Film</a>
+    <a href="follow.html">Follow</a>
+  </div>
+  <button class="cart-btn" type="button" data-cart-open aria-label="Cart">
+    <svg class="bag" viewBox="0 0 18 22" aria-hidden="true" focusable="false"><path d="M6 7.2 V5.6 a3 3 0 0 1 6 0 V7.2" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><rect x="2.4" y="7.2" width="13.2" height="12.6" rx="2.4" fill="none" stroke="currentColor" stroke-width="1.5"/></svg>
+    <span class="cart-count" aria-live="polite" hidden>0</span>
+  </button>
+</nav>
+
+<main id="main">
+  <div id="product-root" aria-busy="true">
+    <section class="section below-bar">
+      <p class="crumb-row"><a class="crumb" href="products.html">Back to all pieces</a></p>
+      <div class="product-top">
+        <div class="gallery-carousel">
+          <div class="photo carousel-window">
+            <div class="skeleton skeleton-image" aria-hidden="true"></div>
+          </div>
+        </div>
+        <div class="buy-panel">
+          <span class="eyebrow">A piece with a story</span>
+          <div class="skeleton skeleton-title" aria-hidden="true"></div>
+          <div class="skeleton skeleton-line" aria-hidden="true"></div>
+          <div class="skeleton skeleton-line skeleton-line-short" aria-hidden="true"></div>
+          <ul class="buy-meta">
+            <li><span class="skeleton skeleton-line" aria-hidden="true"></span></li>
+            <li><span class="skeleton skeleton-line" aria-hidden="true"></span></li>
+            <li><span class="skeleton skeleton-line skeleton-line-short" aria-hidden="true"></span></li>
+          </ul>
+          <div class="buy-row">
+            <span class="skeleton skeleton-price" aria-hidden="true"></span>
+            <span class="skeleton skeleton-button" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+    </section>
+    <p class="visually-hidden" role="status">Loading the piece…</p>
+  </div>
+</main>
+
+<footer>
+  <div class="footer-band" aria-hidden="true"></div>
+  <div class="footer-inner">
+    <span class="footer-star" aria-hidden="true"></span>
+    <span class="wordmark">Hind</span>
+    <p class="footer-line">a soul that happens to have a name</p>
+    <nav class="footer-nav" aria-label="Hind pages">
+      <a href="index.html">Home</a>
+      <a href="products.html" aria-current="page">Pieces</a>
+      <a href="about.html">About</a>
+      <a href="documentary.html">Film</a>
+      <a href="follow.html">Follow</a>
+    </nav>
+    <p class="footer-demo">This shop is a demo for now: we take orders, but no money yet.</p>
+  </div>
+</footer>
+
+<script src="../site.js"></script>
+</body>
+</html>

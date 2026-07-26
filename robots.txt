@@ -1,0 +1,10 @@
+# هند — Be Arabi
+# Allow everything except the QA harness. The product data JSON must stay
+# crawlable: Googlebot fetches it while rendering the data-driven product page.
+
+User-agent: *
+Allow: /
+Disallow: /_qa.html
+
+# TODO before launch: replace hind.example with your real domain.
+Sitemap: https://hind.example/sitemap.xml

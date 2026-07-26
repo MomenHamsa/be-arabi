@@ -11,6 +11,22 @@ Roles used throughout:
 
 ---
 
+## ✅ Shipped 2026-07-26 (this session) — front-end launch slice
+
+The storefront was taken from "rough demo" to "presentable, discoverable, bilingual." What landed:
+
+- **Calm & clean redesign** (site.css): the heavy embroidered `border-image` photo frames became a quiet plaster mat + gold hairline + soft shadow; the `sepia` grade was removed so product photos read true-colour; the all-over star lattice now sits only on feature grounds (hero / alt-ground / night) while plain sections rest on calm sand; the loud Alhambra `frieze` band was slimmed to a seam; the hero veil was lightened so the arches read as intent, not emptiness.
+- **Catalog** (products.html + site.js): even square cards, a shelf-like hover lift, the real piece leads and pops, and preview pieces now show an honest **"قريباً / Coming soon"** tag instead of a fake add-to-cart. Titles link to their page; the story link is a quiet secondary.
+- **SEO & discoverability** (new): `robots.txt`, a bilingual `sitemap.xml` with `hreflang`, JSON-LD structured data (Store, WebSite, Product+Offer, BreadcrumbList, ItemList), and full canonical + OpenGraph/Twitter tags on every page. Product OG is enriched per-product for JS-aware crawlers.
+- **English site** (new `/en/`): a full LTR English store — home, pieces, product template, about, film, follow — sharing one `site.css`/`site.js`. English product data in `products/data/en/`, a top-bar **language switch** (AR ⇄ EN) injected on every page, Georgia serif type for Latin, and `hreflang` pairing throughout. `site.js` is now language-aware (`HIND_LANG` / `HIND_BASE` / `HIND_STR`), so every JS-generated string (cart drawer, chips, buttons, notify form) localises.
+- **🐛 Bug fixed:** prices are written in Arabic-Indic digits (`٣٥`), but the parser used `/[^\d.]/` (ASCII-only), so the demo **cart total silently computed to 0** for real products and the structured-data price was blank. Added digit normalisation (`hindPriceNumber` / `hindPriceCurrency`); verified the pillow now totals correctly and the Product rich result carries `"price":35`.
+
+**The one launch-blocker introduced here:** the real domain. Everything is wired to the placeholder `hind.example` (99 spots across HTML/xml/txt). At launch: find-and-replace `hind.example` → your domain, and set `HIND_SITE.origin` in `site.js`. See Phase 9.
+
+**Still not done here (deliberately, needs decisions or business input):** the transacting backend (orders/payments/delivery — Phase 1–3), removing the `demo-*` preview pieces (kept so the shelves preview full), the real artisan replacing "أم فارس", real product photography, and the analytics install (Phase 7). Copy note: the English translations are faithful but worth a native read before launch.
+
+---
+
 ## Phase 0 — Decisions to lock before writing any code
 
 These decide the shape of everything after. My recommendation is marked, but each is your call.
@@ -137,7 +153,7 @@ The schema that carries everything you asked for (before/after, maker + her stor
 
 ## Phase 9 — Launch checklist (includes the long-standing open items)
 
-- [ ] Real domain + HTTPS; set `canonical`, absolute `og:image`/`twitter:image` URLs (currently relative/empty).
+- [ ] **Real domain + HTTPS.** All SEO tags are wired to the placeholder `hind.example` — find-and-replace it repo-wide (`grep -rl hind.example`) and set `HIND_SITE.origin` in site.js. canonical, hreflang, OpenGraph/Twitter, `sitemap.xml`, `robots.txt`, and JSON-LD are already in place and will go absolute automatically once the origin is set.
 - [ ] `HIND_CONFIG`: real Instagram/YouTube URLs, real notify endpoint or contact email.
 - [ ] **DG Tebian font license** confirmed for web use (abulbara91@gmail.com — noted in index.html).
 - [ ] Remove every "متجر تجريبي" demo notice (topbar drawer, buy panels, footer) — grep for `تجريبي`.

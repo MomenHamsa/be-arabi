@@ -39,6 +39,166 @@ var HIND_PRODUCTS = {
   "demo-tablecloth": { name: "غطاء طاولة مطرّز",   price: 60, currency: "د.أ", img: "", url: "" }
 };
 
+/* ============ SITE / SEO CONFIG ============
+   origin: your real https origin, no trailing slash (e.g. "https://hind.jo").
+   Setting this one value at launch makes every canonical link, Open Graph
+   URL, and JSON-LD URL absolute and correct site-wide. The static <head>
+   tags use the placeholder "https://hind.example"; find-and-replace that
+   token across the repo (and in robots.txt + sitemap.xml) with the same
+   origin, then set it here too. Until then, links stay relative/placeholder
+   and search/social previews are the only thing affected - nothing breaks. */
+var HIND_SITE = {
+  origin: "",            // e.g. "https://hind.jo"
+  brandAr: "هند",
+  brandEn: "Hind",
+  localeAr: "ar_JO",
+  currency: "JOD"        // ISO 4217 for structured data (Jordanian dinar)
+};
+
+/* Inject or replace a JSON-LD <script> by id. SEO is progressive
+   enhancement: any failure here must never break the page. */
+function hindInjectLD(id, obj) {
+  try {
+    var prune = function (o) {
+      if (Array.isArray(o)) return o.map(prune);
+      if (o && typeof o === "object") {
+        Object.keys(o).forEach(function (k) {
+          if (o[k] === undefined || o[k] === null || o[k] === "") delete o[k];
+          else o[k] = prune(o[k]);
+        });
+      }
+      return o;
+    };
+    var prev = document.getElementById(id);
+    if (prev) prev.remove();
+    var s = document.createElement("script");
+    s.type = "application/ld+json";
+    s.id = id;
+    s.text = JSON.stringify(prune(obj));
+    document.head.appendChild(s);
+  } catch (e) { /* non-fatal */ }
+}
+
+/* Site-relative path -> absolute URL, once an origin is configured. */
+function hindAbs(path) {
+  if (!path) return path;
+  if (/^https?:/i.test(path)) return path;
+  var o = HIND_SITE.origin;
+  if (!o) return path;
+  return o.replace(/\/$/, "") + "/" + String(path).replace(/^\//, "");
+}
+
+/* Prices are written in Arabic-Indic digits ("٣٥ د.أ"). JS \d matches only
+   ASCII 0-9, so the old parseFloat(replace(/[^\d.]/)) returned NaN -> 0 and
+   silently zeroed the cart total and the structured-data price. Normalise
+   the digits first, then split the number from its currency label. */
+function hindNormDigits(s) {
+  return String(s == null ? "" : s).replace(/[٠-٩۰-۹]/g, function (d) {
+    var c = d.charCodeAt(0);
+    return String(c >= 0x06F0 ? c - 0x06F0 : c - 0x0660);
+  });
+}
+function hindPriceNumber(display) {
+  var n = parseFloat(hindNormDigits(display).replace(/[^\d.]/g, ""));
+  return isNaN(n) ? 0 : n;
+}
+function hindPriceCurrency(display) {
+  return hindNormDigits(display).replace(/^[\s\d.,]+/, "").trim() || "د.أ";
+}
+
+/* ============ LANGUAGE / PATHS ============
+   One code path serves both the Arabic site (at /) and the English site
+   (at /en/, one level deep). The page's <html lang> drives it: English
+   pages read their own data from products/data/en/ and reach shared
+   assets (product photos, room shots) via ../ . CSS background images are
+   unaffected - url() in site.css resolves against the stylesheet's own
+   location, not the page. */
+var HIND_LANG = ((document.documentElement.getAttribute("lang") || "ar").slice(0, 2)).toLowerCase();
+var HIND_BASE = HIND_LANG === "en" ? "../" : "";
+var HIND_DATA_DIR = HIND_BASE + "products/data/" + (HIND_LANG === "en" ? "en/" : "");
+/* Prefix a page-relative asset path so it resolves from /en/ too. Leaves
+   absolute (http/data) and root-relative (/...) paths untouched. */
+function hindAsset(src) {
+  if (!src) return src;
+  if (/^(https?:|data:|\/)/i.test(src)) return src;
+  return HIND_BASE + src;
+}
+
+/* UI strings the scripts generate (cart drawer, product renderer, catalog
+   chips, notify form). Page copy lives in the HTML/JSON; this table is only
+   for text that JavaScript builds, so the English site reads as English. */
+var HIND_STR = (HIND_LANG === "en") ? {
+  all: "All",
+  emptyShelf: "No pieces yet. The shelves are being arranged.",
+  imgSoon: "Photo coming soon",
+  soon: "Coming soon",
+  addToCart: "Add to cart",
+  readStory: "Read its story",
+  soldSimilar: "Sold - request one like it",
+  backToPieces: "Back to all pieces",
+  demoHint: "This shop is a demo for now: we take orders, but no money yet.",
+  errEyebrow: "Piece not found",
+  errHeading: "This piece isn't available right now.",
+  errBody: "The shelves may be mid-arrangement. Head back to all pieces.",
+  cartTitle: "Your cart",
+  cartClose: "Close cart",
+  cartDemo: "Demo shop - we take orders, but take no money and ship nothing yet.",
+  cartEmpty: "Your cart is empty.",
+  browsePieces: "Browse the pieces",
+  qtyLess: "Decrease by one",
+  qtyMore: "Increase by one",
+  qtyLabel: "Quantity",
+  remove: "Remove",
+  totalLabel: "Total",
+  currencyLabel: "JD",
+  confirmOrder: "Place the order",
+  orderDoneLead: "We've got your order.",
+  orderDoneBody: "This is a demo shop: no money is charged and nothing ships yet. When we truly open the doors, these pieces will be the first to arrive.",
+  ariaCart: "Shopping cart",
+  offSoon: "Coming soon",
+  notifyBadEmail: "Please enter a valid email address.",
+  notifyOk: "We've got your email. We'll write the moment we open.",
+  notifyFail: "Couldn't sign you up right now. Please try again.",
+  notifySoon: "Sign-ups open soon. Bookmark the page and come back to us.",
+  mailSubject: "I want to know first",
+  mailBody: "My email: "
+} : {
+  all: "الكل",
+  emptyShelf: "لا توجد قطع بعد. الرفوف تُرتَّب.",
+  imgSoon: "الصورة قريباً",
+  soon: "قريباً",
+  addToCart: "أضف إلى السلة",
+  readStory: "اقرأ حكايتها",
+  soldSimilar: "بيعت - اطلب قطعة مثلها",
+  backToPieces: "عودة إلى كل القطع",
+  demoHint: "المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.",
+  errEyebrow: "لم نجد القطعة",
+  errHeading: "هذه القطعة غير متاحة الآن.",
+  errBody: "قد تكون الرفوف قيد الترتيب. عد إلى كل القطع.",
+  cartTitle: "سلّتك",
+  cartClose: "أغلق السلة",
+  cartDemo: "متجر تجريبي - نستقبل الطلبات، ولا نأخذ مالاً ولا نشحن بعد.",
+  cartEmpty: "سلّتك فارغة.",
+  browsePieces: "تفرّج على القطع",
+  qtyLess: "أنقص واحدة",
+  qtyMore: "زد واحدة",
+  qtyLabel: "الكمية",
+  remove: "إزالة",
+  totalLabel: "المجموع",
+  currencyLabel: "د.أ",
+  confirmOrder: "أكّد الطلب",
+  orderDoneLead: "وصلنا طلبك.",
+  orderDoneBody: "هذا متجر تجريبي: لا مال يُدفع ولا قطعة تُشحن بعد. حين نفتح الأبواب فعلياً، ستكون هذه القطع أوّل ما يصل.",
+  ariaCart: "سلة المشتريات",
+  offSoon: "قريباً",
+  notifyBadEmail: "اكتب بريداً إلكترونياً صحيحاً من فضلك.",
+  notifyOk: "وصلنا بريدك. سنراسلك أوّل ما نفتح.",
+  notifyFail: "تعذّر التسجيل الآن. حاول مرة أخرى.",
+  notifySoon: "التسجيل يُفتح قريباً. احفظ الصفحة وعُد إلينا.",
+  mailSubject: "أريد أن أعرف أولاً",
+  mailBody: "بريدي: "
+};
+
 /* Gentle scroll reveals + top bar fade + actions. */
 (async function () {
 
@@ -56,18 +216,16 @@ var HIND_PRODUCTS = {
   function loadCatalog() {
     if (_catalog) return Promise.resolve(_catalog);
     if (_catalogPromise) return _catalogPromise;
-    _catalogPromise = fetch("products/data/catalog.json")
+    _catalogPromise = fetch(HIND_DATA_DIR + "catalog.json")
       .then(function (r) { return r.ok ? r.json() : { products: [], categories: [] }; })
       .then(function (data) {
         (data.products || []).forEach(function (p) {
           if (p.status && p.status !== "published") return;
-          var priceNum = parseFloat(String(p.price_display || "").replace(/[^\d.]/g, "")) || 0;
-          var currency = (String(p.price_display || "").match(/[^\d.\s]+/) || [""])[0] || "د.أ";
           HIND_PRODUCTS[p.id] = {
             name: p.title,
-            price: priceNum,
-            currency: currency,
-            img: (p.photo && p.photo.src) || "",
+            price: hindPriceNumber(p.price_display),
+            currency: hindPriceCurrency(p.price_display),
+            img: hindAsset((p.photo && p.photo.src) || ""),
             url: p.detail_url || ""
           };
         });
@@ -103,12 +261,23 @@ var HIND_PRODUCTS = {
 
     /* Render cards */
     shelf.innerHTML = published.map(buildCardHTML).join("") ||
-      '<p class="shelf-empty">لا توجد قطع بعد. الرفوف تُرتَّب.</p>';
+      '<p class="shelf-empty">' + HIND_STR.emptyShelf + '</p>';
     shelf.removeAttribute("aria-busy");
+
+    /* --- SEO: the shelf as an ItemList of real (non-preview) pieces --- */
+    hindInjectLD("ld-itemlist", {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      "itemListElement": published
+        .filter(function (p) { return p.detail_url && !p.demo; })
+        .map(function (p, i) {
+          return { "@type": "ListItem", "position": i + 1, "name": p.title, "url": hindAbs(p.detail_url) };
+        })
+    });
 
     /* Render chips */
     if (filterRow && (data.categories || []).length) {
-      var chipsHtml = '<button type="button" class="chip is-active" data-category-chip="all">الكل</button>';
+      var chipsHtml = '<button type="button" class="chip is-active" data-category-chip="all">' + HIND_STR.all + '</button>';
       data.categories.forEach(function (c) {
         chipsHtml += '<button type="button" class="chip" data-category-chip="' + esc(c.id) + '">' + esc(c.name) + '</button>';
       });
@@ -155,29 +324,41 @@ var HIND_PRODUCTS = {
   function buildCardHTML(p) {
     var photoBox = (p.photo && p.photo.src)
       ? '<figure class="photo">' +
-          '<img src="' + esc(p.photo.src) + '" alt="' + esc(p.photo.alt || p.title) + '" loading="lazy" decoding="async">' +
+          '<img src="' + esc(hindAsset(p.photo.src)) + '" alt="' + esc(p.photo.alt || p.title) + '" loading="lazy" decoding="async">' +
         '</figure>'
       : '<figure class="photo">' +
           '<div class="photo-soon">' +
             '<svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>' +
-            '<span>الصورة قريباً</span>' +
+            '<span>' + HIND_STR.imgSoon + '</span>' +
           '</div>' +
         '</figure>';
+    /* a preview piece: no real photo and no page yet - honest "قريباً",
+       never an add-to-cart button for something that does not exist. */
+    var comingSoon = p.demo || (!p.detail_url && !(p.photo && p.photo.src));
     var photoWrap = p.detail_url
-      ? '<a class="card-photo" href="' + esc(p.detail_url) + '" aria-label="' + esc(p.title + ' - اقرأ حكايتها') + '">' + photoBox + '</a>'
+      ? '<a class="card-photo" href="' + esc(p.detail_url) + '" aria-label="' + esc(p.title + ' - ' + HIND_STR.readStory) + '">' + photoBox + '</a>'
       : photoBox;
-    var actionBtn = p.sold
-      ? '<a class="btn" href="' + esc(p.similar_action_url || "follow.html") + '">بيعت — اطلب قطعة مثلها</a>'
-      : '<button class="btn-solid" type="button" data-add="' + esc(p.id) + '">أضف إلى السلة</button>';
-    var storyLink = (p.detail_url && !p.sold)
-      ? '<a class="btn" href="' + esc(p.detail_url) + '">اقرأ حكايتها</a>'
-      : "";
-    return '<article class="card reveal" data-category="' + esc(p.category_id || "") + '">' +
+    var title = p.detail_url
+      ? '<h2><a class="card-title-link" href="' + esc(p.detail_url) + '">' + esc(p.title) + '</a></h2>'
+      : '<h2>' + esc(p.title) + '</h2>';
+    var action, storyLink = "";
+    if (comingSoon) {
+      action = '<span class="card-soon-tag">' + HIND_STR.soon + '</span>';
+    } else if (p.sold) {
+      action = '<a class="btn" href="' + esc(p.similar_action_url || "follow.html") + '">' + HIND_STR.soldSimilar + '</a>';
+    } else {
+      action = '<button class="btn-solid" type="button" data-add="' + esc(p.id) + '">' + HIND_STR.addToCart + '</button>';
+      if (p.detail_url) {
+        storyLink = '<a class="card-story-link" href="' + esc(p.detail_url) + '">' + HIND_STR.readStory + '</a>';
+      }
+    }
+    return '<article class="card reveal' + (comingSoon ? ' is-soon' : '') + '" data-category="' + esc(p.category_id || "") + '">' +
       photoWrap +
-      '<h2>' + esc(p.title) + '</h2>' +
+      title +
       (p.card_line ? '<p class="card-line">' + esc(p.card_line) + '</p>' : "") +
       '<p class="price">' + esc(p.price_display) + '</p>' +
-      '<div class="card-actions">' + actionBtn + storyLink + '</div>' +
+      '<div class="card-actions">' + action + '</div>' +
+      storyLink +
     '</article>';
   }
 
@@ -209,7 +390,7 @@ var HIND_PRODUCTS = {
 
   async function loadProductData(id) {
     /* SWAP HERE FOR CRM: replace this URL with your CRM endpoint. */
-    var url = "products/data/" + encodeURIComponent(id) + ".json";
+    var url = HIND_DATA_DIR + encodeURIComponent(id) + ".json";
     var res = await fetch(url);
     if (!res.ok) throw new Error("HTTP " + res.status + " for " + url);
     return res.json();
@@ -224,13 +405,11 @@ var HIND_PRODUCTS = {
       }
       /* Register into the cart registry so add-to-cart works. */
       if (data.hero) {
-        var priceNum = parseFloat(String(data.hero.price_display || "").replace(/[^\d.]/g, "")) || 0;
-        var currency = (String(data.hero.price_display || "").match(/[^\d.\s]+/) || [""])[0] || "د.أ";
         HIND_PRODUCTS[data.meta.id] = {
           name: data.hero.title,
-          price: priceNum,
-          currency: currency,
-          img: ((data.hero.gallery || [])[0] || {}).src || "",
+          price: hindPriceNumber(data.hero.price_display),
+          currency: hindPriceCurrency(data.hero.price_display),
+          img: hindAsset(((data.hero.gallery || [])[0] || {}).src || ""),
           url: location.pathname + location.search
         };
       }
@@ -245,16 +424,60 @@ var HIND_PRODUCTS = {
     });
     root.innerHTML = parts.join("");
     root.removeAttribute("aria-busy");
+
+    /* --- SEO: Product rich result, straight from the same data --- */
+    var h = data.hero || {};
+    var meta = data.meta || {};
+    var priceNum = hindPriceNumber(h.price_display) || undefined;
+    var pageUrl = hindAbs(location.pathname + location.search);
+    hindInjectLD("ld-product", {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": h.title || meta.title,
+      "description": meta.description || h.lede,
+      "image": (h.gallery || []).map(function (g) { return hindAbs(g.src); }),
+      "brand": { "@type": "Brand", "name": HIND_SITE.brandAr },
+      "url": pageUrl,
+      "offers": {
+        "@type": "Offer",
+        "price": priceNum,
+        "priceCurrency": HIND_SITE.currency,
+        "availability": "https://schema.org/InStock",
+        "url": pageUrl
+      }
+    });
+    hindInjectLD("ld-breadcrumb", {
+      "@context": "https://schema.org",
+      "@type": "BreadcrumbList",
+      "itemListElement": [
+        { "@type": "ListItem", "position": 1, "name": "الرئيسية", "item": hindAbs("index.html") },
+        { "@type": "ListItem", "position": 2, "name": "القطع", "item": hindAbs("products.html") },
+        { "@type": "ListItem", "position": 3, "name": h.title || meta.title, "item": pageUrl }
+      ]
+    });
+
+    /* Update OG/Twitter so JS-aware crawlers (Google) get per-product
+       previews; the static tags remain the fallback for social scrapers. */
+    var setMeta = function (sel, val) { var el = document.querySelector(sel); if (el && val) el.setAttribute("content", val); };
+    var ogTitle = (h.title || meta.title || "") + " - " + HIND_SITE.brandAr;
+    var ogDesc = meta.description || h.lede || "";
+    var ogImg = (h.gallery && h.gallery[0]) ? hindAbs(h.gallery[0].src) : "";
+    setMeta('meta[property="og:title"]', ogTitle);
+    setMeta('meta[name="twitter:title"]', ogTitle);
+    setMeta('meta[property="og:description"]', ogDesc);
+    setMeta('meta[name="twitter:description"]', ogDesc);
+    setMeta('meta[property="og:image"]', ogImg);
+    setMeta('meta[name="twitter:image"]', ogImg);
   }
 
   function renderProductError(root, err) {
     root.innerHTML =
       '<section class="section below-bar centered breathing">' +
         '<div class="section-inner">' +
-          '<span class="eyebrow">لم نجد القطعة</span>' +
-          '<h1>هذه القطعة غير متاحة الآن.</h1>' +
-          '<p class="body-text" style="margin-top:1rem;">قد تكون الرفوف قيد الترتيب. عد إلى كل القطع.</p>' +
-          '<a class="btn-solid" href="products.html" style="margin-top:1.6rem;">عودة إلى كل القطع</a>' +
+          '<span class="eyebrow">' + HIND_STR.errEyebrow + '</span>' +
+          '<h1>' + HIND_STR.errHeading + '</h1>' +
+          '<p class="body-text" style="margin-top:1rem;">' + HIND_STR.errBody + '</p>' +
+          '<a class="btn-solid" href="products.html" style="margin-top:1.6rem;">' + HIND_STR.backToPieces + '</a>' +
         '</div>' +
       '</section>';
     root.removeAttribute("aria-busy");
@@ -275,7 +498,7 @@ var HIND_PRODUCTS = {
       var priority = i === 0
         ? ' decoding="async" fetchpriority="high"'
         : ' loading="lazy" decoding="async"';
-      return '<img src="' + esc(img.src) + '" alt="' + esc(img.alt) + '"' +
+      return '<img src="' + esc(hindAsset(img.src)) + '" alt="' + esc(img.alt) + '"' +
              attr("width", num(img.width)) + attr("height", num(img.height)) + priority + '>';
     }).join("");
     var features = (h.features || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join("");
@@ -285,7 +508,7 @@ var HIND_PRODUCTS = {
     var cartId = h.cart_id || meta.id;
     return '' +
       '<section class="section below-bar" aria-label="' + esc(h.title) + '">' +
-        '<p class="crumb-row"><a class="crumb" href="products.html">عودة إلى كل القطع</a></p>' +
+        '<p class="crumb-row"><a class="crumb" href="products.html">' + HIND_STR.backToPieces + '</a></p>' +
         '<div class="product-top">' +
           '<div class="gallery-carousel reveal" data-carousel>' +
             '<div class="photo carousel-window">' +
@@ -301,10 +524,10 @@ var HIND_PRODUCTS = {
             (features ? '<ul class="buy-meta">' + features + '</ul>' : "") +
             '<div class="buy-row">' +
               '<p class="price">' + esc(h.price_display) + '</p>' +
-              '<button class="btn-solid" type="button" data-add="' + esc(cartId) + '">أضف إلى السلة</button>' +
+              '<button class="btn-solid" type="button" data-add="' + esc(cartId) + '">' + HIND_STR.addToCart + '</button>' +
             '</div>' +
             readMore +
-            '<p class="demo-hint">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>' +
+            '<p class="demo-hint">' + HIND_STR.demoHint + '</p>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -351,7 +574,7 @@ var HIND_PRODUCTS = {
       '<section class="section" id="' + esc(id) + '" aria-labelledby="h-' + esc(id) + '">' +
         '<div class="split image-first">' +
           '<figure class="photo reveal d2">' +
-            '<img src="' + esc(photo.src) + '" alt="' + esc(photo.alt) + '"' +
+            '<img src="' + esc(hindAsset(photo.src)) + '" alt="' + esc(photo.alt) + '"' +
               attr("width", num(photo.width)) + attr("height", num(photo.height)) +
               ' loading="lazy" decoding="async">' +
           '</figure>' +
@@ -380,11 +603,11 @@ var HIND_PRODUCTS = {
           '</div>' +
           '<figure class="compare reveal d2">' +
             '<div class="compare-stage is-square" id="compare-stage" data-pairs="' + esc(pairsJson) + '">' +
-              '<img class="compare-before" src="' + esc(before.src) + '" alt="' + esc(before.alt) + '"' +
+              '<img class="compare-before" src="' + esc(hindAsset(before.src)) + '" alt="' + esc(before.alt) + '"' +
                 attr("width", num(before.width)) + attr("height", num(before.height)) +
                 ' loading="lazy" decoding="async">' +
               '<div class="compare-topcoat">' +
-                '<img class="compare-after" src="' + esc(after.src) + '" alt="' + esc(after.alt) + '"' +
+                '<img class="compare-after" src="' + esc(hindAsset(after.src)) + '" alt="' + esc(after.alt) + '"' +
                   attr("width", num(after.width)) + attr("height", num(after.height)) +
                   ' loading="lazy" decoding="async">' +
               '</div>' +
@@ -416,8 +639,8 @@ var HIND_PRODUCTS = {
           '<h2 id="h-' + esc(id) + '">' + esc(sec.heading) + '</h2>' +
           '<div class="body-text">' + paragraphsHTML(sec.paragraphs) + '</div>' +
           '<div class="buy-actions" style="justify-content:center; margin-top:1.6rem;">' +
-            '<button class="btn-solid" type="button" data-add="' + esc(meta.id) + '">أضف إلى السلة</button>' +
-            '<a class="btn" href="products.html">عودة إلى كل القطع</a>' +
+            '<button class="btn-solid" type="button" data-add="' + esc(meta.id) + '">' + HIND_STR.addToCart + '</button>' +
+            '<a class="btn" href="products.html">' + HIND_STR.backToPieces + '</a>' +
           '</div>' +
         '</div>' +
       '</section>';
@@ -549,7 +772,7 @@ var HIND_PRODUCTS = {
       if (!el.classList.contains("door-title") && !el.classList.contains("quiet")) {
         var soon = document.createElement("span");
         soon.className = "soon";
-        soon.textContent = "قريباً";
+        soon.textContent = HIND_STR.offSoon;
         el.appendChild(soon);
       }
       el.removeAttribute("href");
@@ -567,7 +790,7 @@ var HIND_PRODUCTS = {
       e.preventDefault();
       var email = document.getElementById("notify-email").value.trim();
       if (!email || email.indexOf("@") < 1) {
-        msg.textContent = "اكتب بريداً إلكترونياً صحيحاً من فضلك.";
+        msg.textContent = HIND_STR.notifyBadEmail;
         return;
       }
       if (HIND_CONFIG.notifyEndpoint) {
@@ -578,19 +801,19 @@ var HIND_PRODUCTS = {
           headers: { "Content-Type": "application/json", "Accept": "application/json" },
           body: JSON.stringify({ email: email })
         }).then(function (r) {
-          msg.textContent = r.ok ? "وصلنا بريدك. سنراسلك أوّل ما نفتح." : "تعذّر التسجيل الآن. حاول مرة أخرى.";
+          msg.textContent = r.ok ? HIND_STR.notifyOk : HIND_STR.notifyFail;
           btn.disabled = false;
           if (r.ok) form.reset();
         }).catch(function () {
-          msg.textContent = "تعذّر التسجيل الآن. حاول مرة أخرى.";
+          msg.textContent = HIND_STR.notifyFail;
           btn.disabled = false;
         });
       } else if (HIND_CONFIG.contactEmail) {
         location.href = "mailto:" + HIND_CONFIG.contactEmail +
-          "?subject=" + encodeURIComponent("أريد أن أعرف أولاً") +
-          "&body=" + encodeURIComponent("بريدي: " + email);
+          "?subject=" + encodeURIComponent(HIND_STR.mailSubject) +
+          "&body=" + encodeURIComponent(HIND_STR.mailBody + email);
       } else {
-        msg.textContent = "التسجيل يُفتح قريباً. احفظ الصفحة وعُد إلينا.";
+        msg.textContent = HIND_STR.notifySoon;
       }
     });
   }
@@ -614,6 +837,8 @@ var HIND_PRODUCTS = {
         ["Images/room-before-2.jpg", "Images/room-after-2.jpg"]
       ];
     }
+    /* resolve every room pair for the current language (../ from /en/) */
+    pairs = pairs.map(function (pr) { return pr.map(hindAsset); });
     var pairIndex = 0;
     var cut = 88;
     var warmed = false;
@@ -767,7 +992,7 @@ var HIND_PRODUCTS = {
     } else {
       var soon = document.createElement("span");
       soon.className = "soon";
-      soon.textContent = "قريباً";
+      soon.textContent = HIND_STR.offSoon;
       el.appendChild(soon);
       el.removeAttribute("href");
       el.setAttribute("aria-disabled", "true");
@@ -802,7 +1027,7 @@ var HIND_PRODUCTS = {
     });
     return t;
   }
-  function num(n) { return n.toLocaleString("ar-EG"); }
+  function num(n) { return n.toLocaleString(HIND_LANG === "en" ? "en-US" : "ar-EG"); }
 
   /* ---- the drawer, built once per page ---- */
   var layer = document.createElement("div");
@@ -811,12 +1036,12 @@ var HIND_PRODUCTS = {
   layer.hidden = true;
   layer.innerHTML =
     '<div class="cart-backdrop" data-cart-close></div>' +
-    '<aside class="cart-drawer" role="dialog" aria-modal="true" aria-label="سلة المشتريات">' +
+    '<aside class="cart-drawer" role="dialog" aria-modal="true" aria-label="' + HIND_STR.ariaCart + '">' +
       '<header class="cart-head">' +
-        '<h2>سلّتك</h2>' +
-        '<button class="cart-close" type="button" data-cart-close aria-label="أغلق السلة">&#215;</button>' +
+        '<h2>' + HIND_STR.cartTitle + '</h2>' +
+        '<button class="cart-close" type="button" data-cart-close aria-label="' + HIND_STR.cartClose + '">&#215;</button>' +
       '</header>' +
-      '<p class="cart-demo">متجر تجريبي - نستقبل الطلبات، ولا نأخذ مالاً ولا نشحن بعد.</p>' +
+      '<p class="cart-demo">' + HIND_STR.cartDemo + '</p>' +
       '<div class="cart-body" id="cart-body"></div>' +
       '<footer class="cart-foot" id="cart-foot"></footer>' +
     '</aside>';
@@ -858,8 +1083,8 @@ var HIND_PRODUCTS = {
 
     if (n === 0) {
       bodyEl.innerHTML =
-        '<p class="cart-empty">سلّتك فارغة.</p>' +
-        '<a class="btn" href="products.html">تفرّج على القطع</a>';
+        '<p class="cart-empty">' + HIND_STR.cartEmpty + '</p>' +
+        '<a class="btn" href="products.html">' + HIND_STR.browsePieces + '</a>';
       footEl.innerHTML = "";
       return;
     }
@@ -882,18 +1107,18 @@ var HIND_PRODUCTS = {
             nameEl +
             '<span class="cart-item-price">' + num(p.price) + ' ' + p.currency + '</span>' +
             '<div class="cart-qty">' +
-              '<button type="button" data-qty="-1" aria-label="أنقص واحدة">&#8722;</button>' +
-              '<span aria-label="الكمية">' + num(cart[id]) + '</span>' +
-              '<button type="button" data-qty="1" aria-label="زد واحدة">+</button>' +
-              '<button type="button" class="cart-remove" data-remove>إزالة</button>' +
+              '<button type="button" data-qty="-1" aria-label="' + HIND_STR.qtyLess + '">&#8722;</button>' +
+              '<span aria-label="' + HIND_STR.qtyLabel + '">' + num(cart[id]) + '</span>' +
+              '<button type="button" data-qty="1" aria-label="' + HIND_STR.qtyMore + '">+</button>' +
+              '<button type="button" class="cart-remove" data-remove>' + HIND_STR.remove + '</button>' +
             '</div>' +
           '</div>' +
         '</div>';
     });
     bodyEl.innerHTML = html;
     footEl.innerHTML =
-      '<div class="cart-total"><span>المجموع</span><strong>' + num(total(cart)) + ' د.أ</strong></div>' +
-      '<button type="button" class="btn-solid cart-confirm" data-confirm>أكّد الطلب</button>';
+      '<div class="cart-total"><span>' + HIND_STR.totalLabel + '</span><strong>' + num(total(cart)) + ' ' + HIND_STR.currencyLabel + '</strong></div>' +
+      '<button type="button" class="btn-solid cart-confirm" data-confirm>' + HIND_STR.confirmOrder + '</button>';
   }
 
   function open() {
@@ -957,8 +1182,8 @@ var HIND_PRODUCTS = {
       confirmed = true;
       bodyEl.innerHTML =
         '<div class="cart-done">' +
-          '<p class="cart-done-lead">وصلنا طلبك.</p>' +
-          '<p>هذا متجر تجريبي: لا مال يُدفع ولا قطعة تُشحن بعد. حين نفتح الأبواب فعلياً، ستكون هذه القطع أوّل ما يصل.</p>' +
+          '<p class="cart-done-lead">' + HIND_STR.orderDoneLead + '</p>' +
+          '<p>' + HIND_STR.orderDoneBody + '</p>' +
         '</div>';
       footEl.innerHTML = "";
       render();   /* refresh the badges: the cart just emptied */
@@ -999,4 +1224,75 @@ var HIND_PRODUCTS = {
     a.addEventListener("focus", arm, { once: true });
     a.addEventListener("touchstart", arm, { once: true, passive: true });
   });
+})();
+
+/* ============ SEO: site-wide structured data + absolute URLs ============
+   Runs on every page. Organization + WebSite JSON-LD help search engines
+   understand the brand; the canonical/OG absolutiser rewrites placeholder
+   URLs to your real origin once HIND_SITE.origin is set. Social scrapers
+   do not run JS, so the static <head> tags carry real absolute URLs at
+   launch via the find-and-replace of "hind.example". */
+(function () {
+  var sameAs = [];
+  if (typeof HIND_CONFIG === "object") {
+    [HIND_CONFIG.instagramUrl, HIND_CONFIG.youtubeUrl, HIND_CONFIG.socialUrl].forEach(function (u) {
+      if (u && sameAs.indexOf(u) < 0) sameAs.push(u);
+    });
+  }
+  var descEl = document.querySelector('meta[name="description"]');
+  hindInjectLD("ld-org", {
+    "@context": "https://schema.org",
+    "@type": "Store",
+    "name": HIND_SITE.brandAr,
+    "alternateName": HIND_SITE.brandEn,
+    "description": descEl ? descEl.getAttribute("content") : undefined,
+    "url": HIND_SITE.origin || location.origin,
+    "logo": hindAbs("Images/site/icon-512.png"),
+    "image": hindAbs("Images/site/og-image.png"),
+    "areaServed": { "@type": "Country", "name": "Jordan" },
+    "sameAs": sameAs.length ? sameAs : undefined
+  });
+  hindInjectLD("ld-website", {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": HIND_SITE.brandAr,
+    "url": HIND_SITE.origin || location.origin,
+    "inLanguage": document.documentElement.lang || "ar"
+  });
+
+  /* Absolutise canonical + OG/Twitter only when an origin is configured. */
+  if (HIND_SITE.origin) {
+    var path = location.pathname.replace(/^\//, "") + location.search;
+    var rebase = function (val) {
+      if (!val) return val;
+      return hindAbs(val.replace(/^https?:\/\/[^/]+\//i, ""));
+    };
+    var canon = document.querySelector('link[rel="canonical"]');
+    if (canon) canon.setAttribute("href", hindAbs(path || "index.html"));
+    var ogUrl = document.querySelector('meta[property="og:url"]');
+    if (ogUrl) ogUrl.setAttribute("content", hindAbs(path || "index.html"));
+    ['meta[property="og:image"]', 'meta[name="twitter:image"]'].forEach(function (sel) {
+      var el = document.querySelector(sel);
+      if (el) el.setAttribute("content", rebase(el.getAttribute("content")));
+    });
+  }
+})();
+
+/* ============ Language switch (AR <-> EN) ============
+   One link, computed from the current page, injected into the top bar so
+   every page gets it without hand-editing each nav. The <head> hreflang
+   tags carry the same pairing for search engines regardless of JS. */
+(function () {
+  var bar = document.querySelector(".topbar");
+  if (!bar) return;
+  var file = location.pathname.split("/").pop() || "index.html";
+  var toEn = HIND_LANG !== "en";
+  var a = document.createElement("a");
+  a.className = "lang-switch";
+  a.href = (toEn ? "en/" : "../") + file + location.search;
+  a.textContent = toEn ? "EN" : "ع";
+  a.setAttribute("aria-label", toEn ? "English version of this page" : "النسخة العربية من الصفحة");
+  a.setAttribute("lang", toEn ? "en" : "ar");
+  var cart = bar.querySelector(".cart-btn");
+  if (cart) bar.insertBefore(a, cart); else bar.appendChild(a);
 })();

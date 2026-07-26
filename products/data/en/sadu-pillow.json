@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "id": "sadu-pillow",
+    "title": "Sadu Cushion",
+    "description": "A cushion hand-woven on the loom from hand-spun, hand-dyed wool. Woven by Umm Faris in the Madaba badia, it carries the story of Sadu weaving and of the woman who made it."
+  },
+  "hero": {
+    "eyebrow": "A piece with a story",
+    "title": "Sadu Cushion",
+    "lede": "Hand-woven on the loom, from wool spun and dyed by hand, in patterns its maker inherited from her grandmother.",
+    "gallery": [
+      { "src": "products/pillow/web/1.jpg", "alt": "The whole Sadu cushion with its red and orange motifs on a white ground", "width": 1200, "height": 1200 },
+      { "src": "products/pillow/web/2.jpg", "alt": "A close detail of the cushion's weave showing the spun wool", "width": 1200, "height": 1200 },
+      { "src": "products/pillow/web/3.jpg", "alt": "The cushion from the side, showing the thickness of the weave", "width": 1200, "height": 1200 }
+    ],
+    "features": [
+      "Fully hand-woven - no machine at any step.",
+      "Natural wool, dyed with colours from the earth.",
+      "Each piece is unique; no two are ever alike.",
+      "Arrives with a card bearing its maker's name and story."
+    ],
+    "price_display": "35 JD",
+    "cart_id": "sadu-pillow",
+    "read_story_label": "Read its story first",
+    "read_story_anchor": "#story"
+  },
+  "sections": [
+    {
+      "type": "story",
+      "id": "story",
+      "eyebrow": "The craft's story",
+      "heading": "Before concrete, our homes were woven.",
+      "paragraphs": [
+        { "text": "The Bedouin tent itself was a weave: the women of the badia spun it from sheep's wool and camel hair, thread over thread, until it became a wall, a roof, and shade." },
+        { "text": "This craft is called Sadu. It was never mere decoration - it is the memory of the badia written in thread: every motif has a meaning, every colour a place, and each woman hands her patterns to her daughters as she hands down her name." },
+        { "text": "This cushion was woven the very same way our grandmothers wove their homes." },
+        { "text": "Wool, a hand, and long patience.", "kicker": true }
+      ]
+    },
+    {
+      "type": "artisan",
+      "id": "artisan",
+      "eyebrow": "The maker",
+      "heading": "Umm Faris, from the Madaba badia.",
+      "photo": {
+        "src": "products/pillow/web/maker.jpg",
+        "alt": "Umm Faris sitting at her wooden loom, weaving coloured wool and smiling",
+        "width": 761,
+        "height": 1015
+      },
+      "paragraphs": [
+        "She learned to weave at nine, on her grandmother's loom set up before the tent. She thought it was play - until her grandmother told her: this loom lived before you, and it will speak of you after you are gone.",
+        "Since that day she has spun the wool by hand and dyed it with what the earth gives: pomegranate for red, onion skins for gold, and roots for everything in between.",
+        "When her husband passed, the loom was all that was left in the house. On it she wove her children's bread, and taught her daughters what her grandmother had taught her.",
+        "Every cushion that leaves her hands holds a month of her life. And when it enters your home, all of this comes with it."
+      ],
+      "quote": "I do not weave wool. I weave my life."
+    },
+    {
+      "type": "compare",
+      "id": "room-test",
+      "eyebrow": "See it in a room",
+      "heading": "Same sofa. Same room. A different soul.",
+      "intro_paragraphs": [
+        { "text": "A modern living room, the kind sold everywhere." },
+        { "text": "Then the cushions arrived.", "kicker": true, "cold": true }
+      ],
+      "before": { "src": "products/pillow/web/before.jpg", "alt": "A modern living room with neutral beige cushions", "width": 1200, "height": 1200 },
+      "after": { "src": "products/pillow/web/after.jpg", "alt": "The same room, its sofa now dressed in woven Sadu cushions", "width": 1200, "height": 1200 },
+      "answer": "This is how the story enters your home.",
+      "caption_hint": "Drag the golden thread",
+      "caption_payoff": "A few cushions gave the room its people back.",
+      "caption_emphasis": "That is what one honest piece can do."
+    },
+    {
+      "type": "outro",
+      "eyebrow": "In short",
+      "heading": "You are not buying a cushion.",
+      "paragraphs": [
+        { "text": "You are buying a month of a woman's life, patterns handed down by grandmothers, and a story that enters your home and stays." },
+        { "text": "You are buying a story.", "kicker": true }
+      ]
+    }
+  ]
+}

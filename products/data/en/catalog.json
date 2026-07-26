@@ -1,0 +1,111 @@
+{
+  "categories": [
+    { "id": "manas",  "name": "Textiles" },
+    { "id": "khazaf", "name": "Ceramics" },
+    { "id": "nahas",  "name": "Copper & Brass" },
+    { "id": "idha",   "name": "Lighting" },
+    { "id": "tatrez", "name": "Embroidery" },
+    { "id": "athath", "name": "Furniture" }
+  ],
+  "products": [
+    {
+      "id": "sadu-pillow",
+      "title": "Sadu Cushion",
+      "category_id": "manas",
+      "price_display": "35 JD",
+      "card_line": "Woven by Umm Faris in the Madaba badia, on her grandmother's loom.",
+      "photo": {
+        "src": "products/pillow/web/1.jpg",
+        "alt": "The hand-woven Sadu cushion in red and orange motifs"
+      },
+      "detail_url": "product.html?id=sadu-pillow",
+      "status": "published",
+      "sold": false,
+      "demo": false
+    },
+    {
+      "id": "demo-rug",
+      "title": "Woven Rug",
+      "category_id": "manas",
+      "price_display": "90 JD",
+      "card_line": "Wool and thread that keep the patterns of the land.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-cups",
+      "title": "Qishani Coffee Set",
+      "category_id": "khazaf",
+      "price_display": "28 JD",
+      "card_line": "Coffee, sipped from a pattern with a history.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-mibkhara",
+      "title": "Engraved Brass Incense Burner",
+      "category_id": "nahas",
+      "price_display": "42 JD",
+      "card_line": "The scent of old Arab homes.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-tray",
+      "title": "Carved Copper Tray",
+      "category_id": "nahas",
+      "price_display": "55 JD",
+      "card_line": "Chiselled by hand, line by line.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-mirror",
+      "title": "Mother-of-Pearl Mirror",
+      "category_id": "athath",
+      "price_display": "75 JD",
+      "card_line": "Shell inlaid into aged wood.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-lantern",
+      "title": "Handmade Lantern",
+      "category_id": "idha",
+      "price_display": "38 JD",
+      "card_line": "Light passing through an old pattern.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-tablecloth",
+      "title": "Embroidered Table Cover",
+      "category_id": "tatrez",
+      "price_display": "60 JD",
+      "card_line": "A stitch mothers pass down.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    }
+  ]
+}
