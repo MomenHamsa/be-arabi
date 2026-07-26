@@ -23,7 +23,7 @@ var HIND_PRODUCTS = {
     price: 35,
     currency: "د.أ",
     img: "products/pillow/web/1.jpg",
-    url: "pillow.html"
+    url: "product.html?id=sadu-pillow"
   },
 
   /* ---- عيّنات المعاينة ----
@@ -40,7 +40,252 @@ var HIND_PRODUCTS = {
 };
 
 /* Gentle scroll reveals + top bar fade + actions. */
-(function () {
+(async function () {
+
+  /* =========================================================
+     CRM-ready product renderer.
+     Runs first on product.html (detects #product-root). Fetches
+     products/data/<id>.json (default id = "sadu-pillow"), builds
+     the section HTML, and populates the skeleton. All existing
+     init below (carousel, compare-stage, cart-add, reveals) then
+     runs against the freshly-populated DOM as if it had been
+     server-rendered — no re-init dance needed.
+
+     WHEN A REAL CRM SHIPS: change one line inside loadProductData
+     to fetch from your API instead of the static JSON file. The
+     rendering code does not change; the CRM just needs to return
+     the same JSON shape shown in products/data/sadu-pillow.json.
+     ========================================================= */
+  var productRoot = document.getElementById("product-root");
+  if (productRoot) {
+    try {
+      var params = new URLSearchParams(location.search);
+      var pid = (params.get("id") || "sadu-pillow").replace(/[^a-z0-9_-]/gi, "");
+      var data = await loadProductData(pid);
+      renderProductInto(productRoot, data);
+    } catch (err) {
+      renderProductError(productRoot, err);
+    }
+  }
+
+  async function loadProductData(id) {
+    /* SWAP HERE FOR CRM: replace this URL with your CRM endpoint. */
+    var url = "products/data/" + encodeURIComponent(id) + ".json";
+    var res = await fetch(url);
+    if (!res.ok) throw new Error("HTTP " + res.status + " for " + url);
+    return res.json();
+  }
+
+  function renderProductInto(root, data) {
+    if (data && data.meta) {
+      if (data.meta.title) document.title = data.meta.title + " - هند";
+      if (data.meta.description) {
+        var m = document.querySelector('meta[name="description"]');
+        if (m) m.setAttribute("content", data.meta.description);
+      }
+      /* Register into the cart registry so add-to-cart works. */
+      if (data.hero) {
+        var priceNum = parseFloat(String(data.hero.price_display || "").replace(/[^\d.]/g, "")) || 0;
+        var currency = (String(data.hero.price_display || "").match(/[^\d.\s]+/) || [""])[0] || "د.أ";
+        HIND_PRODUCTS[data.meta.id] = {
+          name: data.hero.title,
+          price: priceNum,
+          currency: currency,
+          img: ((data.hero.gallery || [])[0] || {}).src || "",
+          url: location.pathname + location.search
+        };
+      }
+    }
+
+    var parts = [];
+    if (data.hero) parts.push(buildHero(data.hero, data.meta));
+    parts.push('<div class="frieze" aria-hidden="true"></div>');
+    (data.sections || []).forEach(function (sec) {
+      var built = buildSection(sec, data.meta);
+      if (built) parts.push(built);
+    });
+    root.innerHTML = parts.join("");
+    root.removeAttribute("aria-busy");
+  }
+
+  function renderProductError(root, err) {
+    root.innerHTML =
+      '<section class="section below-bar centered breathing">' +
+        '<div class="section-inner">' +
+          '<span class="eyebrow">لم نجد القطعة</span>' +
+          '<h1>هذه القطعة غير متاحة الآن.</h1>' +
+          '<p class="body-text" style="margin-top:1rem;">قد تكون الرفوف قيد الترتيب. عد إلى كل القطع.</p>' +
+          '<a class="btn-solid" href="products.html" style="margin-top:1.6rem;">عودة إلى كل القطع</a>' +
+        '</div>' +
+      '</section>';
+    root.removeAttribute("aria-busy");
+    if (window.console) console.error("[product]", err);
+  }
+
+  /* -------- HTML builders (pure functions, escape all interpolated text) -------- */
+  function esc(v) {
+    return String(v == null ? "" : v)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+  function num(v) { return (v == null || v === "") ? "" : String(parseInt(v, 10) || ""); }
+  function attr(name, value) { return value ? ' ' + name + '="' + esc(value) + '"' : ""; }
+
+  function buildHero(h, meta) {
+    var gallery = (h.gallery || []).map(function (img, i) {
+      var priority = i === 0
+        ? ' decoding="async" fetchpriority="high"'
+        : ' loading="lazy" decoding="async"';
+      return '<img src="' + esc(img.src) + '" alt="' + esc(img.alt) + '"' +
+             attr("width", num(img.width)) + attr("height", num(img.height)) + priority + '>';
+    }).join("");
+    var features = (h.features || []).map(function (f) { return '<li>' + esc(f) + '</li>'; }).join("");
+    var readMore = h.read_story_label
+      ? '<p class="buy-secondary"><a class="quiet-link" href="' + esc(h.read_story_anchor || "#story") + '">' + esc(h.read_story_label) + '</a></p>'
+      : "";
+    var cartId = h.cart_id || meta.id;
+    return '' +
+      '<section class="section below-bar" aria-label="' + esc(h.title) + '">' +
+        '<p class="crumb-row"><a class="crumb" href="products.html">عودة إلى كل القطع</a></p>' +
+        '<div class="product-top">' +
+          '<div class="gallery-carousel reveal" data-carousel>' +
+            '<div class="photo carousel-window">' +
+              '<div class="carousel-track" tabindex="0" role="group" aria-label="صور القطعة، تنقّل بالأسهم">' +
+                (gallery || '<div class="skeleton skeleton-image" aria-hidden="true"></div>') +
+              '</div>' +
+            '</div>' +
+          '</div>' +
+          '<div class="buy-panel reveal d2">' +
+            '<span class="eyebrow">' + esc(h.eyebrow) + '</span>' +
+            '<h1>' + esc(h.title) + '</h1>' +
+            (h.lede ? '<div class="body-text"><p>' + esc(h.lede) + '</p></div>' : "") +
+            (features ? '<ul class="buy-meta">' + features + '</ul>' : "") +
+            '<div class="buy-row">' +
+              '<p class="price">' + esc(h.price_display) + '</p>' +
+              '<button class="btn-solid" type="button" data-add="' + esc(cartId) + '">أضف إلى السلة</button>' +
+            '</div>' +
+            readMore +
+            '<p class="demo-hint">المتجر تجريبي حالياً: نستقبل الطلبات ولا نأخذ مالاً بعد.</p>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function paragraphsHTML(list) {
+    return (list || []).map(function (p) {
+      var text = typeof p === "string" ? p : (p.text || "");
+      var cls = [];
+      if (typeof p === "object" && p.kicker) cls.push("kicker");
+      if (typeof p === "object" && p.cold) cls.push("kicker-cold");
+      return cls.length
+        ? '<p class="' + cls.join(" ") + '">' + esc(text) + '</p>'
+        : '<p>' + esc(text) + '</p>';
+    }).join("");
+  }
+
+  function buildSection(sec, meta) {
+    if (!sec || !sec.type) return "";
+    if (sec.type === "story") return buildStorySection(sec);
+    if (sec.type === "artisan") return buildArtisanSection(sec);
+    if (sec.type === "compare") return buildCompareSection(sec);
+    if (sec.type === "outro") return buildOutroSection(sec, meta);
+    return "";
+  }
+
+  function buildStorySection(sec) {
+    var id = sec.id || "story";
+    return '' +
+      '<section class="section centered alt-ground" id="' + esc(id) + '" aria-labelledby="h-' + esc(id) + '">' +
+        '<div class="section-inner reveal">' +
+          '<span class="eyebrow">' + esc(sec.eyebrow) + '</span>' +
+          '<h2 id="h-' + esc(id) + '">' + esc(sec.heading) + '</h2>' +
+          '<div class="body-text">' + paragraphsHTML(sec.paragraphs) + '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function buildArtisanSection(sec) {
+    var id = sec.id || "artisan";
+    var photo = sec.photo || {};
+    var paras = (sec.paragraphs || []).map(function (p) { return '<p>' + esc(p) + '</p>'; }).join("");
+    return '' +
+      '<section class="section" id="' + esc(id) + '" aria-labelledby="h-' + esc(id) + '">' +
+        '<div class="split image-first">' +
+          '<figure class="photo reveal d2">' +
+            '<img src="' + esc(photo.src) + '" alt="' + esc(photo.alt) + '"' +
+              attr("width", num(photo.width)) + attr("height", num(photo.height)) +
+              ' loading="lazy" decoding="async">' +
+          '</figure>' +
+          '<div class="text reveal">' +
+            '<span class="eyebrow">' + esc(sec.eyebrow) + '</span>' +
+            '<h2 id="h-' + esc(id) + '">' + esc(sec.heading) + '</h2>' +
+            '<div class="body-text">' + paras + '</div>' +
+            (sec.quote ? '<p class="maker-quote">' + esc(sec.quote) + '</p>' : "") +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function buildCompareSection(sec) {
+    var id = sec.id || "room-test";
+    var before = sec.before || {};
+    var after = sec.after || {};
+    var pairsJson = JSON.stringify([[before.src || "", after.src || ""]]);
+    return '' +
+      '<section class="section centered proof" id="' + esc(id) + '" aria-labelledby="h-' + esc(id) + '">' +
+        '<div class="proof-layout">' +
+          '<div class="section-inner reveal">' +
+            '<span class="eyebrow">' + esc(sec.eyebrow) + '</span>' +
+            '<h2 id="h-' + esc(id) + '">' + esc(sec.heading) + '</h2>' +
+            '<div class="body-text">' + paragraphsHTML(sec.intro_paragraphs) + '</div>' +
+          '</div>' +
+          '<figure class="compare reveal d2">' +
+            '<div class="compare-stage is-square" id="compare-stage" data-pairs="' + esc(pairsJson) + '">' +
+              '<img class="compare-before" src="' + esc(before.src) + '" alt="' + esc(before.alt) + '"' +
+                attr("width", num(before.width)) + attr("height", num(before.height)) +
+                ' loading="lazy" decoding="async">' +
+              '<div class="compare-topcoat">' +
+                '<img class="compare-after" src="' + esc(after.src) + '" alt="' + esc(after.alt) + '"' +
+                  attr("width", num(after.width)) + attr("height", num(after.height)) +
+                  ' loading="lazy" decoding="async">' +
+              '</div>' +
+              (sec.answer ? '<div class="compare-answer" aria-hidden="true"><span>' + esc(sec.answer) + '</span></div>' : "") +
+              '<div class="compare-handle" id="compare-handle" role="slider" tabindex="0" ' +
+                   'aria-label="مقدار ما عاد إلى الغرفة من روحها العربية" ' +
+                   'aria-valuemin="0" aria-valuemax="100" aria-valuenow="12">' +
+                '<span class="compare-knob" aria-hidden="true"></span>' +
+              '</div>' +
+            '</div>' +
+            ((sec.caption_hint || sec.caption_payoff) ? '<figcaption class="compare-caption">' +
+              (sec.caption_hint ? '<span class="cap-row cap-row-hint"><span class="compare-hint">' + esc(sec.caption_hint) + '</span></span>' : "") +
+              ((sec.caption_payoff || sec.caption_emphasis) ? '<span class="cap-row cap-row-payoff"><span class="compare-payoff">' +
+                esc(sec.caption_payoff || "") +
+                (sec.caption_emphasis ? ' <strong>' + esc(sec.caption_emphasis) + '</strong>' : "") +
+              '</span></span>' : "") +
+            '</figcaption>' : "") +
+          '</figure>' +
+        '</div>' +
+      '</section>';
+  }
+
+  function buildOutroSection(sec, meta) {
+    var id = sec.id || "khulasa";
+    return '' +
+      '<section class="section centered breathing" aria-labelledby="h-' + esc(id) + '">' +
+        '<div class="section-inner reveal">' +
+          '<span class="eyebrow">' + esc(sec.eyebrow) + '</span>' +
+          '<h2 id="h-' + esc(id) + '">' + esc(sec.heading) + '</h2>' +
+          '<div class="body-text">' + paragraphsHTML(sec.paragraphs) + '</div>' +
+          '<div class="buy-actions" style="justify-content:center; margin-top:1.6rem;">' +
+            '<button class="btn-solid" type="button" data-add="' + esc(meta.id) + '">أضف إلى السلة</button>' +
+            '<a class="btn" href="products.html">عودة إلى كل القطع</a>' +
+          '</div>' +
+        '</div>' +
+      '</section>';
+  }
+
+  /* ==================== end product renderer ==================== */
+
   var reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
   var revealed = document.querySelectorAll(".reveal");

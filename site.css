@@ -1463,3 +1463,121 @@ body.cart-locked { overflow: hidden; }
   color: rgba(237, 227, 210, 0.5);
 }
 .footer-nav a[aria-current="page"] { color: #CBA96F; }
+
+/* ============================================================
+   Mobile tap-target polish (WCAG 2.5.8 + Apple HIG 44×44)
+   Triggers on narrow viewports OR any coarse-pointer device.
+   Keeps the slim visual aesthetic on desktop; only enlarges
+   the *hit box* on touch surfaces. Interactive elements grow
+   invisibly by stretching to the parent flex height and gaining
+   padding, so nothing shifts layout.
+   ============================================================ */
+@media (max-width: 720px), (pointer: coarse) {
+  /* Give the topbar breathing room and let its children stretch to
+     fill it — every tap target becomes at least topbar-tall. */
+  .topbar { min-height: 3.5rem; }
+  .topbar.has-tabs { align-items: stretch; padding-inline: 0.6rem; }
+  .topbar.has-tabs > .wordmark,
+  .topbar.has-tabs > .tabs > a,
+  .topbar.has-tabs > .cart-btn { align-self: stretch; }
+  .topbar.has-tabs .wordmark {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 0.5rem;
+    font-size: 1.25rem;
+  }
+  .topbar.has-tabs .tabs { align-items: stretch; gap: 0.4rem; }
+  .topbar.has-tabs .tabs a {
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 0.5rem;
+    min-height: 2.75rem;             /* 44px */
+  }
+
+  /* Cart bag: bump to 44 so a thumb catches it. Icon grows a touch too. */
+  .cart-btn { width: 2.75rem; height: 2.75rem; opacity: 0.9; }
+  .cart-btn .bag { width: 1.2rem; }
+
+  /* Footer nav: links were 27 tall — extend hit area vertically without
+     changing typography. Row-gap tightens since each link is taller. */
+  .footer-nav { gap: 0.25rem 1rem; }
+  .footer-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.5rem;
+  }
+
+  /* Secondary link patterns that appear on product / detail pages. */
+  .crumb,
+  .quiet-link,
+  .cart-remove {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding-inline: 0.4rem;
+  }
+}
+
+/* ============================================================
+   Skeleton screens for the CRM-ready product template
+   Visible immediately in product.html; replaced when JSON loads.
+   The bars mimic the real hero: framed image, title, two body
+   lines, three feature bullets, price + button — so the layout
+   holds its ground with zero CLS when data arrives.
+   ============================================================ */
+.skeleton {
+  display: block;
+  background: linear-gradient(
+    90deg,
+    rgba(176, 141, 87, 0.10) 0%,
+    rgba(176, 141, 87, 0.22) 50%,
+    rgba(176, 141, 87, 0.10) 100%
+  );
+  background-size: 200% 100%;
+  border-radius: 4px;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+}
+.skeleton-image {
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 6px;
+}
+.skeleton-title {
+  height: 2.4rem;
+  width: 70%;
+  margin-bottom: 1rem;
+  border-radius: 6px;
+}
+.skeleton-line {
+  height: 1rem;
+  margin-bottom: 0.6rem;
+}
+.skeleton-line-short { width: 60%; }
+.buy-meta li .skeleton-line { margin-bottom: 0; height: 0.9rem; }
+.skeleton-price {
+  width: 4.5rem;
+  height: 2rem;
+}
+.skeleton-button {
+  width: 10rem;
+  height: 3rem;
+  border-radius: 999px;
+}
+@keyframes skeleton-shimmer {
+  /* RTL-aware: shimmer flows right-to-left, matching reading order */
+  0%   { background-position: -100% 0; }
+  100% { background-position:  100% 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .skeleton { animation: none; }
+}
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
