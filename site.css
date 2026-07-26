@@ -1118,6 +1118,44 @@ footer .wordmark {
   flex-wrap: wrap;
   margin-top: 1.1rem;
 }
+/* ---------- Category filter chips (products.html) ---------- */
+.filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0 var(--pad-x);
+  margin: 0 auto clamp(1.5rem, 4vh, 2.4rem);
+  max-width: var(--field);
+}
+.chip {
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.55em 1.25em;
+  border: 1px solid rgba(176, 141, 87, 0.5);
+  background: transparent;
+  color: var(--ink);
+  border-radius: 999px;
+  cursor: pointer;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+}
+.chip:hover { background: rgba(176, 141, 87, 0.10); }
+.chip:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
+.chip.is-active {
+  background: var(--ink);
+  color: var(--sand-on-night);
+  border-color: var(--ink);
+}
+.shelf .card.is-hidden { display: none; }
+.shelf-empty {
+  text-align: center;
+  color: var(--ink-soft);
+  padding: clamp(2rem, 5vh, 3rem) var(--pad-x);
+  margin: 0 auto;
+}
+.shelf-empty[hidden] { display: none; }
+
 .shelf-note {
   text-align: center;
   color: var(--ink-soft);

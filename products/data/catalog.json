@@ -1,0 +1,111 @@
+{
+  "categories": [
+    { "id": "manas",  "name": "منسوجات" },
+    { "id": "khazaf", "name": "خزف" },
+    { "id": "nahas",  "name": "نحاسيات" },
+    { "id": "idha",   "name": "إضاءة" },
+    { "id": "tatrez", "name": "تطريز" },
+    { "id": "athath", "name": "أثاث" }
+  ],
+  "products": [
+    {
+      "id": "sadu-pillow",
+      "title": "وسادة السدو",
+      "category_id": "manas",
+      "price_display": "٣٥ د.أ",
+      "card_line": "نسجتها أم فارس في بادية مادبا على نول جدّتها.",
+      "photo": {
+        "src": "products/pillow/web/1.jpg",
+        "alt": "وسادة السدو المنسوجة يدوياً بنقوش حمراء وبرتقالية"
+      },
+      "detail_url": "product.html?id=sadu-pillow",
+      "status": "published",
+      "sold": false,
+      "demo": false
+    },
+    {
+      "id": "demo-rug",
+      "title": "بساط منسوج",
+      "category_id": "manas",
+      "price_display": "٩٠ د.أ",
+      "card_line": "صوفٌ وخيوط تحفظ نقوش الأرض.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-cups",
+      "title": "طقم فناجين قيشاني",
+      "category_id": "khazaf",
+      "price_display": "٢٨ د.أ",
+      "card_line": "قهوةٌ تُشرب في نقشٍ له تاريخ.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-mibkhara",
+      "title": "مبخرة نحاس منقوشة",
+      "category_id": "nahas",
+      "price_display": "٤٢ د.أ",
+      "card_line": "رائحة البيوت العربية القديمة.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-tray",
+      "title": "صينية نحاس محفورة",
+      "category_id": "nahas",
+      "price_display": "٥٥ د.أ",
+      "card_line": "حُفرت بالإزميل، سطراً سطراً.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-mirror",
+      "title": "مرآة بإطار صدف",
+      "category_id": "athath",
+      "price_display": "٧٥ د.أ",
+      "card_line": "صدفٌ رُصّع على خشبٍ عتيق.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-lantern",
+      "title": "فانوس مشغول باليد",
+      "category_id": "idha",
+      "price_display": "٣٨ د.أ",
+      "card_line": "ضوءٌ يمرّ من نقشٍ قديم.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    },
+    {
+      "id": "demo-tablecloth",
+      "title": "غطاء طاولة مطرّز",
+      "category_id": "tatrez",
+      "price_display": "٦٠ د.أ",
+      "card_line": "غرزةٌ تتوارثها الأمهات.",
+      "photo": null,
+      "detail_url": null,
+      "status": "published",
+      "sold": false,
+      "demo": true
+    }
+  ]
+}

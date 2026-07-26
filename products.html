@@ -52,133 +52,40 @@ if (location.protocol !== "file:") {
     <p class="lede">مصنوعة بأيدٍ عربية، لكلّ قطعةٍ صانعتها وحكايتها. حين تشتري قطعة، تشتري تاريخاً وثقافة.</p>
   </section>
 
-  <!-- الرفوف: وسادة السدو هي القطعة الحقيقية الوحيدة اليوم؛ البقية
-       عيّنات معاينة (photo-soon + demo-* في site.js) وُضعت لنرى شكل
-       الصفحة وهي ممتلئة. تُحذف مع دخول القطع الحقيقية. -->
+  <!-- الرفوف: يُعبّأ من products/data/catalog.json عبر site.js.
+       إن فشل التحميل، تظهر شبكة الاسكيلتون الحالية كبديل. عند وصول
+       الـ CRM: بدّل سطر الـ fetch في site.js إلى نقطة API فقط. -->
   <section class="section" aria-label="رفوف القطع">
-    <div class="shelf">
 
-      <article class="card reveal">
-        <a class="card-photo" href="product.html?id=sadu-pillow" aria-label="وسادة السدو - اقرأ حكايتها">
-          <figure class="photo">
-            <img src="products/pillow/web/1.jpg" alt="وسادة السدو المنسوجة يدوياً بنقوش حمراء وبرتقالية" loading="lazy" decoding="async">
-          </figure>
-        </a>
-        <h2>وسادة السدو</h2>
-        <p class="card-line">نسجتها أم فارس في بادية مادبا على نول جدّتها.</p>
-        <p class="price">٣٥ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="sadu-pillow">أضف إلى السلة</button>
-          <a class="btn" href="product.html?id=sadu-pillow">اقرأ حكايتها</a>
-        </div>
-      </article>
-
-      <article class="card reveal d2">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>بساط منسوج</h2>
-        <p class="card-line">صوفٌ وخيوط تحفظ نقوش الأرض.</p>
-        <p class="price">٩٠ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-rug">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal d3">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>طقم فناجين قيشاني</h2>
-        <p class="card-line">قهوةٌ تُشرب في نقشٍ له تاريخ.</p>
-        <p class="price">٢٨ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-cups">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>مبخرة نحاس منقوشة</h2>
-        <p class="card-line">رائحة البيوت العربية القديمة.</p>
-        <p class="price">٤٢ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-mibkhara">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal d2">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>صينية نحاس محفورة</h2>
-        <p class="card-line">حُفرت بالإزميل، سطراً سطراً.</p>
-        <p class="price">٥٥ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-tray">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal d3">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>مرآة بإطار صدف</h2>
-        <p class="card-line">صدفٌ رُصّع على خشبٍ عتيق.</p>
-        <p class="price">٧٥ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-mirror">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>فانوس مشغول باليد</h2>
-        <p class="card-line">ضوءٌ يمرّ من نقشٍ قديم.</p>
-        <p class="price">٣٨ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-lantern">أضف إلى السلة</button>
-        </div>
-      </article>
-
-      <article class="card reveal d2">
-        <figure class="photo">
-          <div class="photo-soon">
-            <svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>
-            <span>الصورة قريباً</span>
-          </div>
-        </figure>
-        <h2>غطاء طاولة مطرّز</h2>
-        <p class="card-line">غرزةٌ تتوارثها الأمهات.</p>
-        <p class="price">٦٠ د.أ</p>
-        <div class="card-actions">
-          <button class="btn-solid" type="button" data-add="demo-tablecloth">أضف إلى السلة</button>
-        </div>
-      </article>
-
+    <!-- Category filter chips — populated from catalog.categories. URL syncs
+         via ?category=<id> so filtered views are shareable. -->
+    <div class="filters reveal" role="group" aria-label="تصفية القطع حسب الفئة" data-category-filter>
+      <button type="button" class="chip is-active" data-category-chip="all">الكل</button>
     </div>
+
+    <div class="shelf" data-shelf aria-busy="true">
+      <!-- Skeleton state (3 cards) — replaced by JS when catalog.json arrives. -->
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+      <article class="card" aria-hidden="true">
+        <figure class="photo"><div class="skeleton skeleton-image"></div></figure>
+        <div class="skeleton skeleton-title" style="margin: 1rem auto 0.5rem; width: 60%;"></div>
+        <div class="skeleton skeleton-line" style="margin-inline: auto; width: 80%;"></div>
+        <div class="skeleton skeleton-price" style="margin: 0.6rem auto 0;"></div>
+      </article>
+    </div>
+
+    <p class="shelf-empty" data-shelf-empty hidden>لا توجد قطع في هذه الفئة بعد. الرفوف تُرتَّب.</p>
     <p class="shelf-note reveal">وسادة السدو هي أولى القطع الحقيقية. البقية عيّناتٌ للمعاينة، وضعناها لنرى الرفوف وهي تمتلئ - وستحلّ محلّها قطعٌ حقيقية واحدةً واحدة.</p>
   </section>
 

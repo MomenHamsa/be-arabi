@@ -43,6 +43,145 @@ var HIND_PRODUCTS = {
 (async function () {
 
   /* =========================================================
+     Catalog loader — used by every page.
+     Fetches products/data/catalog.json once (cached), then folds
+     each product into HIND_PRODUCTS so the cart drawer can render
+     its lines from any page. On products.html, the shelf renderer
+     below uses the same cached data.
+
+     WHEN A REAL CRM SHIPS: swap the fetch URL for your list endpoint
+     (returns the same shape). Nothing else changes.
+     ========================================================= */
+  var _catalog = null, _catalogPromise = null;
+  function loadCatalog() {
+    if (_catalog) return Promise.resolve(_catalog);
+    if (_catalogPromise) return _catalogPromise;
+    _catalogPromise = fetch("products/data/catalog.json")
+      .then(function (r) { return r.ok ? r.json() : { products: [], categories: [] }; })
+      .then(function (data) {
+        (data.products || []).forEach(function (p) {
+          if (p.status && p.status !== "published") return;
+          var priceNum = parseFloat(String(p.price_display || "").replace(/[^\d.]/g, "")) || 0;
+          var currency = (String(p.price_display || "").match(/[^\d.\s]+/) || [""])[0] || "د.أ";
+          HIND_PRODUCTS[p.id] = {
+            name: p.title,
+            price: priceNum,
+            currency: currency,
+            img: (p.photo && p.photo.src) || "",
+            url: p.detail_url || ""
+          };
+        });
+        _catalog = data;
+        return data;
+      })
+      .catch(function (err) {
+        if (window.console) console.warn("[catalog]", err);
+        _catalog = { products: [], categories: [] };
+        return _catalog;
+      });
+    return _catalogPromise;
+  }
+
+  /* Kick catalog load early — non-blocking; individual pages await it
+     as needed. */
+  var catalogReady = loadCatalog();
+
+  /* =========================================================
+     Shelf renderer (products.html only).
+     Populates [data-shelf] with product cards from the catalog,
+     builds category chips into [data-category-filter], and syncs
+     the active filter to a `?category=<id>` URL parameter.
+     ========================================================= */
+  var shelf = document.querySelector("[data-shelf]");
+  if (shelf) {
+    var filterRow = document.querySelector("[data-category-filter]");
+    var emptyMsg = document.querySelector("[data-shelf-empty]");
+    var data = await catalogReady;
+    var published = (data.products || []).filter(function (p) {
+      return !p.status || p.status === "published";
+    });
+
+    /* Render cards */
+    shelf.innerHTML = published.map(buildCardHTML).join("") ||
+      '<p class="shelf-empty">لا توجد قطع بعد. الرفوف تُرتَّب.</p>';
+    shelf.removeAttribute("aria-busy");
+
+    /* Render chips */
+    if (filterRow && (data.categories || []).length) {
+      var chipsHtml = '<button type="button" class="chip is-active" data-category-chip="all">الكل</button>';
+      data.categories.forEach(function (c) {
+        chipsHtml += '<button type="button" class="chip" data-category-chip="' + esc(c.id) + '">' + esc(c.name) + '</button>';
+      });
+      filterRow.innerHTML = chipsHtml;
+    }
+
+    /* Apply initial filter from URL */
+    var initialCat = new URLSearchParams(location.search).get("category") || "all";
+    applyShelfFilter(initialCat);
+    document.querySelectorAll("[data-category-chip]").forEach(function (chip) {
+      chip.classList.toggle("is-active", chip.getAttribute("data-category-chip") === initialCat);
+    });
+
+    /* Wire chip clicks */
+    if (filterRow) {
+      filterRow.addEventListener("click", function (e) {
+        var chip = e.target.closest("[data-category-chip]");
+        if (!chip) return;
+        var cat = chip.getAttribute("data-category-chip");
+        document.querySelectorAll("[data-category-chip]").forEach(function (c) {
+          c.classList.toggle("is-active", c === chip);
+        });
+        var url = new URL(location.href);
+        if (cat === "all") url.searchParams.delete("category");
+        else url.searchParams.set("category", cat);
+        history.replaceState(null, "", url);
+        applyShelfFilter(cat);
+      });
+    }
+
+    function applyShelfFilter(catId) {
+      var cards = shelf.querySelectorAll(".card");
+      var visible = 0;
+      cards.forEach(function (card) {
+        var cat = card.getAttribute("data-category");
+        var match = (catId === "all" || cat === catId);
+        card.classList.toggle("is-hidden", !match);
+        if (match) visible++;
+      });
+      if (emptyMsg) emptyMsg.hidden = visible !== 0;
+    }
+  }
+
+  function buildCardHTML(p) {
+    var photoBox = (p.photo && p.photo.src)
+      ? '<figure class="photo">' +
+          '<img src="' + esc(p.photo.src) + '" alt="' + esc(p.photo.alt || p.title) + '" loading="lazy" decoding="async">' +
+        '</figure>'
+      : '<figure class="photo">' +
+          '<div class="photo-soon">' +
+            '<svg viewBox="-30 -30 60 60" aria-hidden="true" focusable="false"><polygon points="28,0 10.9,4.5 19.8,19.8 4.5,10.9 0,28 -4.5,10.9 -19.8,19.8 -10.9,4.5 -28,0 -10.9,-4.5 -19.8,-19.8 -4.5,-10.9 0,-28 4.5,-10.9 19.8,-19.8 10.9,-4.5" fill="none" stroke="currentColor" stroke-width="1.6"/></svg>' +
+            '<span>الصورة قريباً</span>' +
+          '</div>' +
+        '</figure>';
+    var photoWrap = p.detail_url
+      ? '<a class="card-photo" href="' + esc(p.detail_url) + '" aria-label="' + esc(p.title + ' - اقرأ حكايتها') + '">' + photoBox + '</a>'
+      : photoBox;
+    var actionBtn = p.sold
+      ? '<a class="btn" href="' + esc(p.similar_action_url || "follow.html") + '">بيعت — اطلب قطعة مثلها</a>'
+      : '<button class="btn-solid" type="button" data-add="' + esc(p.id) + '">أضف إلى السلة</button>';
+    var storyLink = (p.detail_url && !p.sold)
+      ? '<a class="btn" href="' + esc(p.detail_url) + '">اقرأ حكايتها</a>'
+      : "";
+    return '<article class="card reveal" data-category="' + esc(p.category_id || "") + '">' +
+      photoWrap +
+      '<h2>' + esc(p.title) + '</h2>' +
+      (p.card_line ? '<p class="card-line">' + esc(p.card_line) + '</p>' : "") +
+      '<p class="price">' + esc(p.price_display) + '</p>' +
+      '<div class="card-actions">' + actionBtn + storyLink + '</div>' +
+    '</article>';
+  }
+
+  /* =========================================================
      CRM-ready product renderer.
      Runs first on product.html (detects #product-root). Fetches
      products/data/<id>.json (default id = "sadu-pillow"), builds
