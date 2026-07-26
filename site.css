@@ -907,7 +907,7 @@ footer .wordmark {
   .compare-stage.is-anim .compare-handle { transition: none; }
   .mosaic-band .tile svg { transition: none; }
   .mosaic-band .tile.lit svg { transform: none; }
-  .carousel-arrow, .carousel-dots button { transition: none; }
+  .carousel-arrow, .carousel-dots button::before { transition: none; }
 }
 
 /* ============================================================
@@ -1219,20 +1219,33 @@ footer .wordmark {
 .carousel-dots {
   display: flex;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 0.9rem;
+  gap: 0.25rem;
+  margin-top: 0.6rem;
 }
+/* Tap area is 24×24 (WCAG 2.5.8), but the visible dot is still a small
+   pellet drawn via ::before — invisible padding gives fat fingers room
+   without changing the design. */
 .carousel-dots button {
-  width: 0.5rem;
-  height: 0.5rem;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
   border: 0;
   padding: 0;
-  background: rgba(176, 141, 87, 0.35);
+  background: transparent;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.carousel-dots button::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: rgba(176, 141, 87, 0.35);
   transition: background-color 0.25s ease, transform 0.25s ease;
 }
-.carousel-dots button[aria-current="true"] { background: var(--clay); transform: scale(1.3); }
+.carousel-dots button[aria-current="true"]::before { background: var(--clay); transform: scale(1.3); }
 .carousel-dots button:focus-visible { outline: 2px solid var(--clay); outline-offset: 3px; }
 .buy-panel { max-width: var(--measure); }
 .buy-panel h1 { font-size: clamp(2.2rem, 1.5rem + 3vw, 3.3rem); margin-bottom: 0.6rem; }
