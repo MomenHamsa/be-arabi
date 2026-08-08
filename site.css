@@ -421,6 +421,7 @@ em.mark { font-style: normal; color: var(--clay); }
 /* seam position as % from the left edge; without JS both rooms show half half */
 .compare-topcoat {
   position: absolute; inset: 0;
+  -webkit-clip-path: inset(0 0 0 var(--cut, 50%));
   clip-path: inset(0 0 0 var(--cut, 50%));
 }
 .compare-handle {
@@ -445,6 +446,12 @@ em.mark { font-style: normal; color: var(--clay); }
   background: var(--night);
   border: 1.5px solid var(--gold);
   box-shadow: 0 4px 14px rgba(34, 27, 21, 0.35);
+  /* the stage stays pan-y so the page can still be scrolled by swiping over
+     the room; the knob itself claims the gesture outright, so a slightly
+     diagonal drag from the knob is never stolen by the scroller */
+  pointer-events: auto;
+  touch-action: none;
+  cursor: ew-resize;
 }
 .compare-knob::before, .compare-knob::after {
   content: "";

@@ -161,7 +161,9 @@ var HIND_STR = (HIND_LANG === "en") ? {
   notifyFail: "Couldn't sign you up right now. Please try again.",
   notifySoon: "Sign-ups open soon. Bookmark the page and come back to us.",
   mailSubject: "I want to know first",
-  mailBody: "My email: "
+  mailBody: "My email: ",
+  roomOther: "Try another room",
+  roomFirst: "Back to the first room"
 } : {
   all: "الكل",
   emptyShelf: "لا توجد قطع بعد. الرفوف تُرتَّب.",
@@ -196,7 +198,9 @@ var HIND_STR = (HIND_LANG === "en") ? {
   notifyFail: "تعذّر التسجيل الآن. حاول مرة أخرى.",
   notifySoon: "التسجيل يُفتح قريباً. احفظ الصفحة وعُد إلينا.",
   mailSubject: "أريد أن أعرف أولاً",
-  mailBody: "بريدي: "
+  mailBody: "بريدي: ",
+  roomOther: "جرّب غرفةً أخرى",
+  roomFirst: "عُد إلى الغرفة الأولى"
 };
 
 /* Gentle scroll reveals + top bar fade + actions. */
@@ -605,11 +609,11 @@ var HIND_STR = (HIND_LANG === "en") ? {
             '<div class="compare-stage is-square" id="compare-stage" data-pairs="' + esc(pairsJson) + '">' +
               '<img class="compare-before" src="' + esc(hindAsset(before.src)) + '" alt="' + esc(before.alt) + '"' +
                 attr("width", num(before.width)) + attr("height", num(before.height)) +
-                ' loading="lazy" decoding="async">' +
+                ' loading="lazy" decoding="async" draggable="false">' +
               '<div class="compare-topcoat">' +
                 '<img class="compare-after" src="' + esc(hindAsset(after.src)) + '" alt="' + esc(after.alt) + '"' +
                   attr("width", num(after.width)) + attr("height", num(after.height)) +
-                  ' loading="lazy" decoding="async">' +
+                  ' loading="lazy" decoding="async" draggable="false">' +
               '</div>' +
               (sec.answer ? '<div class="compare-answer" aria-hidden="true"><span>' + esc(sec.answer) + '</span></div>' : "") +
               '<div class="compare-handle" id="compare-handle" role="slider" tabindex="0" ' +
@@ -849,7 +853,8 @@ var HIND_STR = (HIND_LANG === "en") ? {
     var applyCut = function (v) {
       cut = Math.min(Math.max(v, 0), 100);
       stage.style.setProperty("--cut", cut + "%");
-      handle.setAttribute("aria-valuenow", Math.round(100 - cut));
+      if (handle) handle.setAttribute("aria-valuenow", Math.round(100 - cut));
+      if (!proofSection) return;
       if (!warmed && cut <= 45) {
         warmed = true;
         proofSection.classList.add("is-warm");
@@ -880,44 +885,117 @@ var HIND_STR = (HIND_LANG === "en") ? {
       proofIo.observe(stage);
     }
 
-    var dragging = false;
+    var dragging = false;     /* the seam is following the pointer */
+    var pending = false;      /* a finger is down, the axis is not decided yet */
+    var startX = 0, startY = 0;
+    var AXIS_SLOP = 6;        /* px of travel before we call the gesture */
     var preloaded = false;
-    var cutFromEvent = function (e) {
-      var r = stage.getBoundingClientRect();
-      applyCut(((e.clientX - r.left) / r.width) * 100);
+    var touchOf = function (e) {
+      if (e.touches && e.touches.length) return e.touches[0];
+      if (e.changedTouches && e.changedTouches.length) return e.changedTouches[0];
+      return null;
     };
-    stage.addEventListener("pointerdown", function (e) {
+    var clientXOf = function (e) { var t = touchOf(e); return t ? t.clientX : e.clientX; };
+    var clientYOf = function (e) { var t = touchOf(e); return t ? t.clientY : e.clientY; };
+    var cutFromEvent = function (e) {
+      var x = clientXOf(e);
+      if (typeof x !== "number") return;
+      var r = stage.getBoundingClientRect();
+      if (!r.width) return;
+      applyCut(((x - r.left) / r.width) * 100);
+    };
+
+    /* the two rooms are plain <img>: without this the browser starts its own
+       image drag on mousedown and swallows the whole gesture. CSS
+       -webkit-user-drag covers Chrome and Safari only, so cancel the drag
+       event too - that is what Firefox listens to. */
+    stage.addEventListener("dragstart", function (e) { e.preventDefault(); });
+
+    var capture = function (e) {
+      if (e.pointerId != null && stage.setPointerCapture) {
+        try { stage.setPointerCapture(e.pointerId); } catch (err) { /* capture is a nicety */ }
+      }
+    };
+    var beginDrag = function () {
       dragging = true;
+      pending = false;
       cancelNudge();
       if (!preloaded) {
         preloaded = true;
         if (pairs[1]) pairs[1].forEach(function (src) { new Image().src = src; });
       }
-      if (stage.setPointerCapture) stage.setPointerCapture(e.pointerId);
+    };
+    var startDrag = function (e) {
+      if (e.button != null && e.button !== 0) return;   /* left button only */
+      startX = clientXOf(e);
+      startY = clientYOf(e);
+      var onKnob = e.target && e.target.closest && e.target.closest(".compare-handle");
+      var byFinger = e.pointerType === "touch" || e.type === "touchstart";
+      /* a finger landing on the room is more often the start of a scroll than
+         a drag, so hold off until the first move says which one it is. the
+         knob is unambiguous - it grabs straight away. */
+      if (byFinger && !onKnob) { pending = true; return; }
+      capture(e);
+      beginDrag();
       cutFromEvent(e);
-    });
-    stage.addEventListener("pointermove", function (e) {
-      if (dragging) cutFromEvent(e);
-    });
+      /* stops text selection and the native image drag before they begin */
+      if (e.cancelable) e.preventDefault();
+    };
+    var moveDrag = function (e) {
+      if (pending) {
+        var dx = Math.abs(clientXOf(e) - startX);
+        var dy = Math.abs(clientYOf(e) - startY);
+        if (dx < AXIS_SLOP && dy < AXIS_SLOP) return;
+        pending = false;
+        if (dy > dx) return;                /* the finger is scrolling the page */
+        capture(e);
+        beginDrag();
+      }
+      if (!dragging) return;
+      cutFromEvent(e);
+      if (e.cancelable && e.type === "touchmove") e.preventDefault();
+    };
+    var endDrag = function () { dragging = false; pending = false; };
+
+    /* move and release are bound to the window, not the stage: if pointer
+       capture is refused or revoked mid-gesture (browser claims the drag,
+       finger leaves the frame) the seam still follows the pointer. */
+    stage.addEventListener("pointerdown", startDrag);
+    window.addEventListener("pointermove", moveDrag);
     ["pointerup", "pointercancel"].forEach(function (type) {
-      stage.addEventListener(type, function () { dragging = false; });
+      window.addEventListener(type, endDrag);
     });
+
+    /* browsers without Pointer Events (older iOS Safari) get the same
+       gesture through mouse and touch */
+    if (!window.PointerEvent) {
+      stage.addEventListener("mousedown", startDrag);
+      window.addEventListener("mousemove", moveDrag);
+      window.addEventListener("mouseup", endDrag);
+      stage.addEventListener("touchstart", startDrag, { passive: false });
+      window.addEventListener("touchmove", moveDrag, { passive: false });
+      ["touchend", "touchcancel"].forEach(function (type) {
+        window.addEventListener(type, endDrag);
+      });
+    }
 
     /* keyboard: in RTL, the left arrow moves the story forward */
-    handle.addEventListener("keydown", function (e) {
-      var step = 6;
-      if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); cancelNudge(); applyCut(cut - step); }
-      else if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); cancelNudge(); applyCut(cut + step); }
-      else if (e.key === "Home") { e.preventDefault(); cancelNudge(); applyCut(100); }
-      else if (e.key === "End") { e.preventDefault(); cancelNudge(); applyCut(0); }
-    });
+    if (handle) {
+      handle.addEventListener("keydown", function (e) {
+        var step = 6;
+        if (e.key === "ArrowLeft" || e.key === "ArrowUp") { e.preventDefault(); cancelNudge(); applyCut(cut - step); }
+        else if (e.key === "ArrowRight" || e.key === "ArrowDown") { e.preventDefault(); cancelNudge(); applyCut(cut + step); }
+        else if (e.key === "Home") { e.preventDefault(); cancelNudge(); applyCut(100); }
+        else if (e.key === "End") { e.preventDefault(); cancelNudge(); applyCut(0); }
+      });
+    }
 
-    if (switchBtn) {
+    if (switchBtn && beforeImg && afterImg) {
       switchBtn.addEventListener("click", function () {
         pairIndex = 1 - pairIndex;
         beforeImg.src = pairs[pairIndex][0];
         afterImg.src = pairs[pairIndex][1];
-        switchBtn.textContent = pairIndex === 0 ? "جرّب غرفةً أخرى" : "عُد إلى الغرفة الأولى";
+        switchBtn.textContent = pairIndex === 0 ? HIND_STR.roomOther : HIND_STR.roomFirst;
       });
     }
   }
